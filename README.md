@@ -17,5 +17,5 @@ This project is a simple and responsive Grocery List App built using PHP, Tailwi
 1. **Clone the Repository**:
    ```sh
    git clone https://github.com/markjordanugtongspc/grocerylist-app-wiz
-   cd Grocery-List-App-Mark-Jordan
+   cd grocerylist-app-wiz
    ```
