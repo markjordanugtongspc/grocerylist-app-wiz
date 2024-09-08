@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grocery List App - Sign Up</title>
-    <link rel="stylesheet" href="styles_signup.css">
+    <link rel="stylesheet" href="styles/styles_signup.css">
     <link rel="icon" href="../../images/grocery.ico" type="image/x-icon">
 </head>
 
