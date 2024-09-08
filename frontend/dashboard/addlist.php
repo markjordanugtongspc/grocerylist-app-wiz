@@ -3,9 +3,45 @@ session_start();
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
-    // If not logged in, redirect to the login page with an error message
-    header("Location: ../../index.php?error=please%login%first");
+    header("Location: ../../index.php?error=please%20login%20first");
     exit();
+}
+
+$error = '';
+$success = '';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $configPath = __DIR__ . '/../../backend/database/config.php';
+    if (file_exists($configPath)) {
+        require_once $configPath;
+    } else {
+        die("Config file not found. Looked in: " . $configPath);
+    }
+
+    $username = $_SESSION['username'];
+    $list_name = trim($_POST['list-name']);
+    $due_date = $_POST['due-date'];
+    $priority = $_POST['priority'];
+    $is_default = isset($_POST['default']) ? 1 : 0;
+
+    if (empty($list_name) || empty($due_date) || empty($priority)) {
+        $error = "All fields are required.";
+    } else {
+        $stmt = $conn->prepare("INSERT INTO grocery_list (username, list_name, due_date, priority, is_default) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssi", $username, $list_name, $due_date, $priority, $is_default);
+
+        if ($stmt->execute()) {
+            $success = "List created successfully!";
+            // Optionally, redirect to dashboard
+            // header("Location: dashboard.php?success=list_created");
+            // exit();
+        } else {
+            $error = "Error creating list: " . $conn->error;
+        }
+
+        $stmt->close();
+    }
+    $conn->close();
 }
 ?>
 
@@ -28,14 +64,22 @@ if (!isset($_SESSION['username'])) {
             <a href="#" class="search-icon"><i class="fas fa-search"></i></a>
         </div>
         <div class="content">
-            <form id="addListForm">
+            <?php
+            if (!empty($error)) {
+                echo "<div class='error-message'>$error</div>";
+            }
+            if (!empty($success)) {
+                echo "<div class='success-message'>$success</div>";
+            }
+            ?>
+            <form id="addListForm" method="POST" action="">
                 <div class="form-group">
                     <label for="list-name">List Name</label>
-                    <input type="text" id="list-name" placeholder="Enter list name" required>
+                    <input type="text" id="list-name" name="list-name" placeholder="Enter list name" required>
                 </div>
                 <div class="form-group">
                     <label for="due-date">Due Date</label>
-                    <input type="date" id="due-date" required>
+                    <input type="date" id="due-date" name="due-date" required>
                 </div>
                 <div class="form-group">
                     <label>Priority</label>

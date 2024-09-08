@@ -3,9 +3,20 @@ session_start();
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
-    header("Location: ../../index.php?error=please%20login%20first");
+    header("Location: ../../index.php?error=please%login%first");
     exit();
 }
+
+// Fetch the user's lists from the database
+require_once '../../backend/database/config.php';
+$username = $_SESSION['username'];
+$stmt = $conn->prepare("SELECT * FROM grocery_list WHERE username = ? ORDER BY due_date ASC");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+$lists = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -20,10 +31,11 @@ if (!isset($_SESSION['username'])) {
     <title>Dashboard</title>
 </head>
 <body>
-    <div class="dashboard">
-        <div class="header">
-            <div class="hamburger">☰</div>
-        </div>
+    <div class="dashboard <?php echo !empty($lists) ? 'has-lists' : ''; ?>">
+    <div class="header">
+        <div class="hamburger">☰</div>
+        <div class="text-wrapper">Grocery List</div>
+    </div>
         <div class="sidebar">
             <div class="user-profile">
                 <div class="avatar-container">
@@ -42,16 +54,33 @@ if (!isset($_SESSION['username'])) {
             <button class="sidebar-btn"><i class="fas fa-question-circle"></i> Help</button>
             <a href="../../backend/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
-        <div class="content">
-            <img class="image-1" src="../../images/dashboard/image-1.png" alt="Background Image 1" />
-            <img class="image-2" src="../../images/dashboard/image-2.png" alt="Background Image 2" />
-            <img class="image" src="../../images/dashboard/image.png" alt="Main Dashboard Image" />
-            <img class="image-3" src="../../images/dashboard/image-3.png" alt="Corner Image Left" />
-            <img class="image-4" src="../../images/dashboard/image-4.png" alt="Corner Image Right" />
-            <div class="text-wrapper">Grocery List</div>
-            <div class="text-wrapper-2">Your List is Empty</div>
-            <p class="p">Create a list and add items to your trolley for an easier grocery experience</p>
-            <button class="rectangle"><a href="../dashboard/addlist.php" style="text-decoration: none; color: inherit;">Add List</a></button>
+        <div class="content" id="listContent">
+            <?php if (empty($lists)): ?>
+                <img src="../../images/image-1.png" alt="Background 1" class="image-1 hidden">
+                <img src="../../images/image-2.png" alt="Background 2" class="image-2 hidden">
+                <img src="../../images/image-3.png" alt="Decoration 1" class="image-3 hidden">
+                <img src="../../images/image-4.png" alt="Decoration 2" class="image-4 hidden">
+                <div class="text-wrapper-2">Your List is Empty</div>
+                <p class="p">Create a list and add items to your trolley for an easier grocery experience</p>
+                <a href="addlist.php" class="rectangle">Add List</a>
+            <?php else: ?>
+                <div class="list-container">
+                    <?php foreach ($lists as $list): ?>
+                        <div class="list-item clickable" onclick="viewList(<?php echo $list['id']; ?>)">
+                            <h3><?php echo htmlspecialchars($list['list_name']); ?></h3>
+                            <p>Due: <?php echo $list['due_date']; ?></p>
+                            <p class="priority">
+                                <span class="priority-circle <?php echo strtolower($list['priority']); ?>"></span>
+                                Priority: <?php echo ucfirst($list['priority']); ?>
+                            </p>
+                            <?php if ($list['is_default']): ?>
+                                <span class="default-badge">Default</span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <a href="addlist.php" class="rectangle">Add New List</a>
+            <?php endif; ?>
         </div>
     </div>
     <!-- Add this at the end of the body tag -->
@@ -69,5 +98,36 @@ if (!isset($_SESSION['username'])) {
     </div>
 </div>
     <script src="scripts/dashboard_script.js"></script>
+    <!-- Add this just before the closing </body> tag -->
+<div id="listModal" class="modal">
+    <div class="modal-content list-edit-modal">
+        <span class="close">&times;</span>
+        <h2 id="modalTitle">Edit List</h2>
+        <div class="list-edit-container">
+            <div class="list-details">
+                <input type="text" id="listName" placeholder="List Name">
+                <input type="date" id="listDueDate">
+                <select id="listPriority">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div class="product-categories">
+                <button class="category-btn active" data-category="fresh-fruits">Fresh Fruits</button>
+                <button class="category-btn" data-category="fresh-vegetables">Fresh Vegetables</button>
+                <button class="category-btn" data-category="prepacked-foods">PrePacked Foods</button>
+            </div>
+            <div class="product-list" id="productList">
+                <!-- Products will be dynamically added here -->
+            </div>
+            <div class="selected-products" id="selectedProducts">
+                <h3>Selected Products</h3>
+                <!-- Selected products will be dynamically added here -->
+            </div>
+        </div>
+        <button id="saveListBtn">Save List</button>
+    </div>
+</div>
 </body>
 </html>
