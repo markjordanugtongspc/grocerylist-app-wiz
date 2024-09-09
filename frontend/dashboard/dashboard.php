@@ -10,8 +10,25 @@ if (!isset($_SESSION['username'])) {
 // Fetch the user's lists from the database
 require_once '../../backend/database/config.php';
 $username = $_SESSION['username'];
-$stmt = $conn->prepare("SELECT * FROM grocery_list WHERE username = ? ORDER BY due_date ASC");
+
+// First, get the UserID
+$stmt = $conn->prepare("SELECT UserID FROM Users WHERE Username = ?");
 $stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+$stmt->close();
+
+if (!$user) {
+    die("User not found");
+}
+
+$userId = $user['UserID'];
+
+// Now fetch the grocery lists for this user
+// Remove the ORDER BY clause for now
+$stmt = $conn->prepare("SELECT * FROM GroceryList WHERE UserID = ?");
+$stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
 $lists = $result->fetch_all(MYSQLI_ASSOC);
@@ -68,14 +85,14 @@ $conn->close();
                 <?php else: ?>
                     <div class="list-container">
                         <?php foreach ($lists as $list): ?>
-                            <div class="list-item clickable" data-id="<?php echo $list['id']; ?>" onclick="viewList(<?php echo $list['id']; ?>)">
-                                <h3><?php echo htmlspecialchars($list['list_name']); ?></h3>
-                                <p>Due: <?php echo $list['due_date']; ?></p>
+                            <div class="list-item clickable" data-id="<?php echo $list['ListID']; ?>" onclick="viewList(<?php echo $list['ListID']; ?>)">
+                                <h3><?php echo htmlspecialchars($list['ListName']); ?></h3>
+                                <p>Due: <?php echo $list['DueDate']; ?></p>
                                 <p class="priority">
-                                    <span class="priority-circle <?php echo strtolower($list['priority']); ?>"></span>
-                                    Priority: <?php echo ucfirst($list['priority']); ?>
+                                    <span class="priority-circle <?php echo strtolower($list['Priority']); ?>"></span>
+                                    Priority: <?php echo ucfirst($list['Priority']); ?>
                                 </p>
-                                <?php if ($list['is_default']): ?>
+                                <?php if ($list['IsDefault']): ?>
                                     <span class="default-badge">Default</span>
                                 <?php endif; ?>
                             </div>

@@ -45,12 +45,15 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 showSuccessMessage(data.message);
+                clearForm(); // Clear the form after successful submission
             } else {
                 console.error(data.error);
+                alert('Error: ' + data.error); // Show error message to user
             }
         })
         .catch(error => {
             console.error('Error:', error);
+            alert('An unexpected error occurred. Please try again.'); // Show generic error message to user
         });
     });
 
@@ -59,13 +62,13 @@ document.addEventListener('DOMContentLoaded', function() {
         successMessageElement.textContent = message;
         successPopup.style.display = 'block';
         
-        // Set a timeout to hide the popup and reload the page after 3 seconds
+        // Set a timeout to hide the popup and redirect to dashboard after 3 seconds
         setTimeout(() => {
             successPopup.style.opacity = '0';
             setTimeout(() => {
                 successPopup.style.display = 'none';
                 successPopup.style.opacity = '1';
-                location.reload(); // Reload the current page
+                window.location.href = 'dashboard.php'; // Redirect to dashboard
             }, 300); // Short delay for fade-out effect
         }, 3000); // 3 seconds delay
     }

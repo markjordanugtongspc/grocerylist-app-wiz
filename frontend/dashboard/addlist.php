@@ -24,8 +24,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($list_name) || empty($due_date) || empty($priority)) {
         echo json_encode(['success' => false, 'error' => 'All fields are required.']);
     } else {
-        $stmt = $conn->prepare("INSERT INTO grocery_list (username, list_name, due_date, priority, is_default) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssi", $username, $list_name, $due_date, $priority, $is_default);
+        // First, get the UserID
+        $stmt = $conn->prepare("SELECT UserID FROM Users WHERE Username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+        $stmt->close();
+
+        if (!$user) {
+            echo json_encode(['success' => false, 'error' => 'User not found.']);
+            exit();
+        }
+
+        $userId = $user['UserID'];
+
+        // Updated SQL query with correct column names
+        $stmt = $conn->prepare("INSERT INTO GroceryList (UserID, ListName, DueDate, Priority, IsDefault, DateCreated, LastModified) VALUES (?, ?, ?, ?, ?, NOW(), NOW())");
+        $stmt->bind_param("isssi", $userId, $list_name, $due_date, $priority, $is_default);
 
         if ($stmt->execute()) {
             echo json_encode(['success' => true, 'message' => 'List created successfully!']);
