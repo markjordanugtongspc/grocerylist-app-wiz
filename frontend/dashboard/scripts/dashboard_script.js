@@ -93,26 +93,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
             modalContent.innerHTML = `
                 <span class="close">&times;</span>
-                <div class="list-header">
-                    <h2>${listDetails.list_name}</h2>
-                    <span class="list-badge ${listDetails.priority.toLowerCase()}">${listDetails.priority}</span>
-                </div>
-                <p class="due-date"><i class="far fa-calendar-alt"></i> Due: ${listDetails.due_date}</p>
-                <div class="product-section">
-                    <h3>Shopping List</h3>
-                    <ul class="product-list">
-                        ${listDetails.products.map(product => `
-                            <li class="product-item">
-                                <span class="product-name">${product.name}</span>
-                                <span class="product-quantity">${product.quantity}</span>
-                            </li>
-                        `).join('')}
-                    </ul>
-                </div>
-                <div class="action-buttons">
-                    <button id="editProductsBtn" class="btn btn-edit"><i class="fas fa-edit"></i> Edit List</button>
-                    <button id="deleteListBtn" class="btn btn-delete"><i class="fas fa-trash-alt"></i> Delete List</button>
-                </div>
+                <h2>${listDetails.list_name}</h2>
+                <p><i class="far fa-calendar-alt"></i> Due: ${listDetails.due_date}</p>
+                <div class="priority ${listDetails.priority.toLowerCase()}">${listDetails.priority}</div>
+                <h3>Shopping List</h3>
+                <ul>
+                    ${listDetails.products.map(product => `
+                        <li>
+                            <span class="product-name">${product.name}</span>
+                            <span class="product-quantity">${product.quantity}x</span>
+                        </li>
+                    `).join('')}
+                </ul>
+                <button id="editProductsBtn"><i class="fas fa-edit"></i> Edit List</button>
+                <button id="deleteListBtn"><i class="fas fa-trash-alt"></i> Delete List</button>
             `;
 
             viewListModal.style.display = 'block';
