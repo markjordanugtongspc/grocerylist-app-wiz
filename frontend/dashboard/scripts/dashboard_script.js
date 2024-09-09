@@ -11,24 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveListBtn = document.getElementById('saveListBtn');
     const categoryBtns = document.querySelectorAll('.category-btn');
     let currentListId;
-    let listsData = {}; // This will store the lists data fetched from the backend
-
-    const categories = {
-        "Fruits": [
-            { name: "Strawberry", price: 4.00, image: "../../images/products/fruits/strawberry.jpg" },
-            { name: "Banana", price: 7.00, image: "../../images/products/fruits/banana.jpg" },
-            { name: "Apple", price: 4.00, image: "../../images/products/fruits/apple.jpg" },
-            { name: "Watermelon", price: 4.00, image: "../../images/products/fruits/watermelon.jpg" }
-        ],
-        "Vegetables": [
-            { name: "Carrot", price: 2.00, image: "../../images/products/vegetables/carrot.jpg" },
-            { name: "Broccoli", price: 3.00, image: "../../images/products/vegetables/broccoli.jpg" }
-        ],
-        "Processed Foods": [
-            { name: "Canned Beans", price: 1.50, image: "../../images/products/other/canned-beans.jpg" },
-            { name: "Pasta", price: 2.50, image: "../../images/products/other/pasta.jpg" }
-        ]
-    };
+    let tempListData = {};
 
     // Existing event listeners
     hamburger.addEventListener('click', function() {
@@ -55,248 +38,152 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Function to fetch lists data from the DOM
-    function fetchListsData() {
-        const listItems = document.querySelectorAll('.list-item');
-        listItems.forEach(item => {
-            const id = item.getAttribute('data-id');
-            const name = item.querySelector('h3').textContent;
-            const dueDate = item.querySelector('p').textContent.replace('Due: ', '');
-            const priority = item.querySelector('.priority-circle').classList[1];
-            const lastModified = item.getAttribute('data-last-modified');
-            
-            listsData[id] = {
-                list_name: name,
-                due_date: dueDate,
-                priority: priority,
-                lastModified: lastModified,
-                products: [] // We'll assume products are empty for now
-            };
-        });
-    }
-
-    // Call this function when the page loads
-    fetchListsData();
-
-    window.viewList = function(listId) {
-        currentListId = listId;
-        const listDetails = listsData[listId];
-        if (!listDetails) {
-            alert('List not found.');
-            return;
-        }
-
-        if (listDetails.lastModified && listDetails.lastModified !== 'null') {
-            // Show the view modal for modified lists
-            const viewListModal = document.getElementById('viewListModal');
-            const modalContent = viewListModal.querySelector('.modal-content');
-
-            modalContent.innerHTML = `
-                <span class="close">&times;</span>
-                <h2>${listDetails.list_name}</h2>
-                <p><i class="far fa-calendar-alt"></i> Due: ${listDetails.due_date}</p>
-                <div class="priority ${listDetails.priority.toLowerCase()}">${listDetails.priority}</div>
-                <h3>Shopping List</h3>
-                <ul>
-                    ${listDetails.products.map(product => `
-                        <li>
-                            <span class="product-name">${product.name}</span>
-                            <span class="product-quantity">${product.quantity}x</span>
-                        </li>
-                    `).join('')}
-                </ul>
-                <button id="editProductsBtn"><i class="fas fa-edit"></i> Edit List</button>
-                <button id="deleteListBtn"><i class="fas fa-trash-alt"></i> Delete List</button>
-            `;
-
-            viewListModal.style.display = 'block';
-
-            modalContent.querySelector('.close').addEventListener('click', function() {
-                viewListModal.style.display = 'none';
-            });
-
-            document.getElementById('editProductsBtn').addEventListener('click', function() {
-                viewListModal.style.display = 'none';
-                showListEditModal(listId);
-            });
-
-            document.getElementById('deleteListBtn').addEventListener('click', function() {
-                if (confirm('Are you sure you want to delete this list?')) {
-                    deleteList(listId);
-                }
-            });
-        } else {
-            // Show the edit modal directly for unmodified lists
-            showListEditModal(listId);
-        }
-    };
-
-    // Allow closing the modal by clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target == viewListModal) {
-            viewListModal.style.display = 'none';
-        }
-    });
-
-    function showListEditModal(listId) {
-        const listDetails = listsData[listId];
-        if (!listDetails) return;
-
-        document.getElementById('modalTitle').textContent = `Edit List: ${listDetails.list_name}`;
-        document.getElementById('listName').value = listDetails.list_name;
-        document.getElementById('listDueDate').value = listDetails.due_date;
-        document.getElementById('listPriority').value = listDetails.priority;
-
-        selectedProducts.innerHTML = '<h3>Selected Products</h3>';
-        if (listDetails.products && listDetails.products.length > 0) {
-            listDetails.products.forEach(product => {
-                addToSelectedProducts(product);
-            });
-        }
-
-        listModal.style.display = 'block';
-        loadProducts('Fruits'); // Load fruits by default
-    }
-
-    // Modified loadProducts function
     function loadProducts(category) {
         productList.innerHTML = '';
-        categories[category].forEach(product => {
-            const productItem = document.createElement('div');
-            productItem.className = 'product-item';
-            productItem.innerHTML = `
-                <img src="${product.image}" alt="${product.name}">
-                <p>${product.name}</p>
-                <p>₱${parseFloat(product.price).toFixed(2)}</p>
-                <button class="add-to-list-btn">Add</button>
-            `;
-            productItem.querySelector('.add-to-list-btn').addEventListener('click', () => addToSelectedProducts(product));
-            productList.appendChild(productItem);
-        });
+        
+        // Existing products
+        const existingProducts = {
+            'Fruits': [
+                { ProductName: 'Apple', Price: 4.00, ImageURL: '../../images/products/fruits/apple.jpg' },
+                { ProductName: 'Banana', Price: 7.00, ImageURL: '../../images/products/fruits/banana.jpg' },
+                { ProductName: 'Strawberry', Price: 4.00, ImageURL: '../../images/products/fruits/strawberry.jpg' },
+                { ProductName: 'Watermelon', Price: 4.00, ImageURL: '../../images/products/fruits/watermelon.jpg' }
+            ],
+            'Vegetables': [
+                { ProductName: 'Carrot', Price: 30.00, ImageURL: '../../images/products/vegetables/carrot.jpg' },
+                { ProductName: 'Broccoli', Price: 40.00, ImageURL: '../../images/products/vegetables/broccoli.jpg' }
+            ],
+            'Other': [
+                { ProductName: 'Canned Beans', Price: 50.00, ImageURL: '../../images/products/other/canned-beans.jpg' },
+                { ProductName: 'Pasta', Price: 45.00, ImageURL: '../../images/products/other/pasta.jpg' }
+            ]
+        };
+
+        // Display existing products
+        if (existingProducts[category]) {
+            existingProducts[category].forEach(product => {
+                displayProduct(product);
+            });
+        }
+
+        // Fetch and display newly added products
+        fetch(`../../backend/get_products.php?category=${category}`)
+            .then(response => response.json())
+            .then(products => {
+                products.forEach(product => {
+                    if (!existingProducts[category] || !existingProducts[category].some(p => p.ProductName === product.ProductName)) {
+                        displayProduct(product);
+                    }
+                });
+            })
+            .catch(error => console.error('Error:', error));
     }
 
-    // Modified addToSelectedProducts function
-    function addToSelectedProducts(product) {
-        const existingProduct = Array.from(selectedProducts.querySelectorAll('.selected-product')).find(item => 
-            item.querySelector('span').textContent.includes(product.name)
-        );
+    function displayProduct(product) {
+        const productItem = document.createElement('div');
+        productItem.className = 'product-item';
+        productItem.innerHTML = `
+            <img src="${product.ImageURL || '../../images/products/default.jpg'}" alt="${product.ProductName}">
+            <p class="product-name">${product.ProductName}</p>
+            <p class="product-price">₱${product.Price ? parseFloat(product.Price).toFixed(2) : 'N/A'}</p>
+            ${product.Brand ? `<p class="product-brand">Brand: ${product.Brand}</p>` : ''}
+            ${product.WeightVolume ? `<p class="product-weight-volume">Weight/Volume: ${product.WeightVolume}</p>` : ''}
+            ${product.Store ? `<p class="product-store">Store: ${product.Store}</p>` : ''}
+            <button class="add-to-list-btn">Add</button>
+        `;
 
+        productItem.querySelector('.add-to-list-btn').addEventListener('click', () => {
+            addToSelectedProducts(product);
+        });
+
+        productList.appendChild(productItem);
+    }
+
+    function addToSelectedProducts(product) {
+        const selectedProductsList = document.getElementById('selectedProducts');
+        const existingProduct = selectedProductsList.querySelector(`[data-product-name="${product.ProductName}"]`);
+    
         if (existingProduct) {
-            // If product already exists, update quantity
-            const quantitySpan = existingProduct.querySelector('.quantity');
-            let quantity = parseInt(quantitySpan.textContent) + 1;
-            quantitySpan.textContent = quantity;
+            // If the product already exists, don't do anything
+            return;
         } else {
-            // If product doesn't exist, add new item
-            const productItem = document.createElement('div');
-            productItem.className = 'selected-product';
-            productItem.innerHTML = `
-                <span>${product.name} - ₱${parseFloat(product.price).toFixed(2)} <span class="quantity">1</span>x</span>
-                <button class="remove-btn">Remove</button>
-            `;
-            productItem.querySelector('.remove-btn').addEventListener('click', () => productItem.remove());
-            selectedProducts.appendChild(productItem);
+            // Add new product to the list
+            const listItem = document.createElement('li');
+            listItem.setAttribute('data-product-name', product.ProductName);
+            
+            // Check if it's a pre-existing product or a newly added one
+            if (product.Category === undefined) {
+                // Pre-existing product
+                listItem.innerHTML = `
+                    <span class="product-name">${product.ProductName} - ₱${parseFloat(product.Price).toFixed(2)}</span>
+                    <span class="product-quantity">1x</span>
+                    <button class="remove-product" title="Remove">×</button>
+                `;
+            } else {
+                // Newly added product
+                listItem.innerHTML = `
+                    <span class="product-name">${product.ProductName} - ₱${parseFloat(product.Price).toFixed(2)} - ${product.Category}</span>
+                    <input type="number" class="product-quantity" value="1" min="1">
+                    <button class="remove-product" title="Remove">×</button>
+                `;
+    
+                listItem.querySelector('.product-quantity').addEventListener('change', (e) => {
+                    if (e.target.value < 1) e.target.value = 1;
+                });
+            }
+    
+            listItem.querySelector('.remove-product').addEventListener('click', () => {
+                listItem.remove();
+            });
+    
+            selectedProductsList.appendChild(listItem);
         }
     }
+
+    // Add this function to handle saving the list
+    function saveList() {
+        const listName = document.getElementById('listName').value;
+        const listDueDate = document.getElementById('listDueDate').value;
+        const listPriority = document.getElementById('listPriority').value;
+        
+        const selectedProductsData = Array.from(selectedProducts.querySelectorAll('.selected-product')).map(item => ({
+            name: item.querySelector('.product-name').textContent,
+            category: item.querySelector('.product-category').textContent,
+            price: parseFloat(item.querySelector('.product-price').textContent.replace('₱', '')),
+            quantity: parseInt(item.querySelector('.quantity-input').value)
+        }));
+
+        tempListData = {
+            id: currentListId,
+            name: listName,
+            dueDate: listDueDate,
+            priority: listPriority,
+            products: selectedProductsData
+        };
+
+        // Store the tempListData in localStorage
+        localStorage.setItem('tempListData', JSON.stringify(tempListData));
+
+        // Close the modal
+        listModal.style.display = 'none';
+
+        // Show a success message
+        alert('List saved successfully!');
+    }
+
+    // Add event listener for the Save List button
+    document.getElementById('saveListBtn').addEventListener('click', saveList);
 
     // Category button event listeners
     categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             categoryBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            loadProducts(btn.dataset.category);
+            loadProducts(btn.dataset.category === 'Processed Foods' ? 'Other' : btn.dataset.category);
         });
     });
 
-    function deleteList(listId) {
-        // For now, we'll just remove it from the frontend
-        delete listsData[listId];
-        updateListsUI();
-        viewListModal.style.display = 'none';
-        // You would typically send a request to the server here to delete the list
-    }
-
-    // Modified saveListBtn event listener
-    saveListBtn.addEventListener('click', function() {
-        const listData = {
-            id: currentListId,
-            name: document.getElementById('listName').value,
-            dueDate: document.getElementById('listDueDate').value,
-            priority: document.getElementById('listPriority').value,
-            products: Array.from(selectedProducts.querySelectorAll('.selected-product')).map(p => {
-                const [name, priceWithCurrency] = p.querySelector('span').textContent.split(' - ');
-                const price = parseFloat(priceWithCurrency.replace('₱', '').trim());
-                const quantity = parseInt(p.querySelector('.quantity').textContent);
-                return { name, price, quantity };
-            })
-        };
-
-        // Send request to update the list in the backend
-        fetch('../../backend/update_list.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(listData)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Update the listsData object
-                listsData[currentListId] = {
-                    list_name: listData.name,
-                    due_date: listData.dueDate,
-                    priority: listData.priority,
-                    lastModified: data.lastModified,
-                    products: listData.products
-                };
-
-                listModal.style.display = 'none';
-                updateListsUI();
-                viewList(currentListId); // Show the view modal after saving
-            } else {
-                throw new Error(data.error || 'Unknown error occurred');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred: ' + error.message);
-        });
-    });
-
-    // Function to update the UI after editing a list
-    function updateListsUI() {
-        const listContainer = document.querySelector('.list-container');
-        if (listContainer) {
-            listContainer.innerHTML = '';
-            for (const [id, list] of Object.entries(listsData)) {
-                const listItem = document.createElement('div');
-                listItem.className = 'list-item clickable';
-                listItem.setAttribute('data-id', id);
-                listItem.setAttribute('data-last-modified', list.lastModified || 'null');
-                listItem.onclick = () => viewList(id);
-                listItem.innerHTML = `
-                    <h3>${list.list_name}</h3>
-                    <p>Due: ${list.due_date}</p>
-                    <p class="priority">
-                        <span class="priority-circle ${list.priority.toLowerCase()}"></span>
-                        Priority: ${list.priority}
-                    </p>
-                `;
-                listContainer.appendChild(listItem);
-            }
-        }
-    }
-
-    // Load initial lists
-    updateListsUI();
-
-    // Load the first category by default
+    // Load initial products
     loadProducts("Fruits");
 
     // Close modal when clicking the close button
@@ -310,10 +197,69 @@ document.addEventListener('DOMContentLoaded', function() {
         if (event.target == listModal) {
             listModal.style.display = 'none';
         }
-        if (event.target == viewListModal) {
-            viewListModal.style.display = 'none';
+    });
+
+    const addProductsBtn = document.getElementById('addProductsBtn');
+    const addProductModal = document.getElementById('addProductModal');
+    const addProductForm = document.getElementById('addProductForm');
+    const addProductCloseBtn = addProductModal.querySelector('.close');
+
+    addProductsBtn.addEventListener('click', function() {
+        addProductModal.style.display = 'block';
+    });
+
+    addProductCloseBtn.addEventListener('click', function() {
+        addProductModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target == addProductModal) {
+            addProductModal.style.display = 'none';
         }
     });
+
+    addProductForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('../../backend/add_product.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Product added successfully!');
+                addProductModal.style.display = 'none';
+                addProductForm.reset();
+                // Optionally, refresh the product list here
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while adding the product.');
+        });
+    });
+
+    // Update file input display
+    const productImageInput = document.getElementById('productImage');
+    const productImageFileName = addProductModal.querySelector('.file-name');
+
+    productImageInput.addEventListener('change', function() {
+        if (this.files && this.files.length > 0) {
+            productImageFileName.textContent = this.files[0].name;
+        } else {
+            productImageFileName.textContent = 'No file chosen';
+        }
+    });
+
+    // Update the HTML to include the "Selected Products" text
+    document.querySelector('.selected-products').innerHTML = `
+        <h3>Selected Products</h3>
+        <ul id="selectedProducts"></ul>
+    `;
 });
 
 // Add this function at the beginning of your script
@@ -333,5 +279,76 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             fileName.textContent = 'No file chosen';
         }
+    });
+});
+
+// Add these variables at the top of your file
+const listModal = document.getElementById('listModal');
+const modalClose = listModal.querySelector('.close');
+
+// Add this function to handle viewing a list
+function viewList(listId) {
+    currentListId = listId;
+    
+    // Fetch the list details from the server
+    fetch(`../../backend/get_list_details.php?listId=${listId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const listModal = document.getElementById('listModal');
+                const listName = document.getElementById('listName');
+                const listDueDate = document.getElementById('listDueDate');
+                const listPriority = document.getElementById('listPriority');
+                const selectedProducts = document.getElementById('selectedProducts');
+
+                if (listModal && listName && listDueDate && listPriority && selectedProducts) {
+                    // Populate the modal with list details
+                    listName.value = data.list.ListName;
+                    listDueDate.value = data.list.DueDate;
+                    listPriority.value = data.list.Priority;
+                    
+                    // Clear existing products
+                    selectedProducts.innerHTML = '';
+                    
+                    // Add products to the selected products list
+                    data.list.products.forEach(product => addToSelectedProducts(product));
+                    
+                    // Show the modal
+                    listModal.style.display = 'block';
+                } else {
+                    console.error('One or more required elements are missing from the DOM');
+                    alert('Error: Unable to display list details. Please try again later.');
+                }
+            } else {
+                console.error('Error fetching list details:', data.error);
+                alert('Error fetching list details: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert('An unexpected error occurred. Please check the console for more details.');
+        });
+}
+
+// Close the modal when the close button is clicked
+modalClose.onclick = function() {
+    listModal.style.display = 'none';
+}
+
+// Close the modal when clicking outside of it
+window.onclick = function(event) {
+    if (event.target == listModal) {
+        listModal.style.display = 'none';
+    }
+}
+
+// Make sure to add event listeners for list items
+document.addEventListener('DOMContentLoaded', function() {
+    const listItems = document.querySelectorAll('.list-item');
+    listItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const listId = this.getAttribute('data-id');
+            viewList(listId);
+        });
     });
 });
