@@ -25,12 +25,14 @@ $conn->close();
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles/dashboard_style.css" />
     <link rel="icon" href="../../images/grocery.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Dashboard</title>
 </head>
 <body>
+    <div class="container">
     <div class="dashboard <?php echo !empty($lists) ? 'has-lists' : ''; ?>">
     <div class="header">
         <div class="hamburger">☰</div>
@@ -55,45 +57,56 @@ $conn->close();
             <a href="../../backend/logout.php" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
         <div class="content" id="listContent">
-            <?php if (empty($lists)): ?>
-                <img src="../../images/image-1.png" alt="Background 1" class="image-1 hidden">
-                <img src="../../images/image-2.png" alt="Background 2" class="image-2 hidden">
-                <img src="../../images/image-3.png" alt="Decoration 1" class="image-3 hidden">
-                <img src="../../images/image-4.png" alt="Decoration 2" class="image-4 hidden">
-                <div class="text-wrapper-2">Your List is Empty</div>
-                <p class="p">Create a list and add items to your trolley for an easier grocery experience</p>
-                <a href="addlist.php" class="rectangle">Add List</a>
-            <?php else: ?>
-                <div class="list-container">
-                    <?php foreach ($lists as $list): ?>
-                        <div class="list-item clickable" onclick="viewList(<?php echo $list['id']; ?>)">
-                            <h3><?php echo htmlspecialchars($list['list_name']); ?></h3>
-                            <p>Due: <?php echo $list['due_date']; ?></p>
-                            <p class="priority">
-                                <span class="priority-circle <?php echo strtolower($list['priority']); ?>"></span>
-                                Priority: <?php echo ucfirst($list['priority']); ?>
-                            </p>
-                            <?php if ($list['is_default']): ?>
-                                <span class="default-badge">Default</span>
-                            <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <a href="addlist.php" class="rectangle">Add New List</a>
-            <?php endif; ?>
+            <div class="content-wrapper">
+                <?php if (empty($lists)): ?>
+                    <img src="../../images/dashboard/image-1.png" alt="Background 1" class="image-1">
+                    <img src="../../images/dashboard/image-2.png" alt="Background 2" class="image-2">
+                    <img src="../../images/dashboard/image.png" alt="Center Image" class="image">
+                    <div class="text-wrapper-2">Your List is Empty</div>
+                    <p class="p">Create a list and add items to your trolley for an easier grocery experience</p>
+                    <a href="addlist.php" class="rectangle">Add List</a>
+                <?php else: ?>
+                    <div class="list-container">
+                        <?php foreach ($lists as $list): ?>
+                            <div class="list-item clickable" data-id="<?php echo $list['id']; ?>" onclick="viewList(<?php echo $list['id']; ?>)">
+                                <h3><?php echo htmlspecialchars($list['list_name']); ?></h3>
+                                <p>Due: <?php echo $list['due_date']; ?></p>
+                                <p class="priority">
+                                    <span class="priority-circle <?php echo strtolower($list['priority']); ?>"></span>
+                                    Priority: <?php echo ucfirst($list['priority']); ?>
+                                </p>
+                                <?php if ($list['is_default']): ?>
+                                    <span class="default-badge">Default</span>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <a href="addlist.php" class="rectangle">Add New List</a>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
     <!-- Add this at the end of the body tag -->
 <div id="settingsModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content settings-modal">
         <span class="close">&times;</span>
         <h2>Profile Settings</h2>
         <form id="settingsForm" enctype="multipart/form-data">
-            <label for="newUsername">New Username:</label>
-            <input type="text" id="newUsername" name="newUsername" required>
-            <label for="newAvatar">New Avatar:</label>
-            <input type="file" id="newAvatar" name="newAvatar" accept="image/*">
-            <button type="submit">Save Changes</button>
+            <div class="form-group">
+                <label for="newUsername">New Username</label>
+                <input type="text" id="newUsername" name="newUsername" required class="form-control" placeholder="Enter new username">
+            </div>
+            <div class="form-group">
+                <label for="newAvatar">New Avatar</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="newAvatar" name="newAvatar" accept="image/*" class="file-input">
+                    <label for="newAvatar" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Choose File
+                    </label>
+                    <span class="file-name">No file chosen</span>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Save Changes</button>
         </form>
     </div>
 </div>
@@ -114,20 +127,19 @@ $conn->close();
                 </select>
             </div>
             <div class="product-categories">
-                <button class="category-btn active" data-category="fresh-fruits">Fresh Fruits</button>
-                <button class="category-btn" data-category="fresh-vegetables">Fresh Vegetables</button>
-                <button class="category-btn" data-category="prepacked-foods">PrePacked Foods</button>
+                <button class="category-btn active" data-category="Fruits">Fruits</button>
+                <button class="category-btn" data-category="Vegetables">Vegetables</button>
+                <button class="category-btn" data-category="Processed Foods">Processed Foods</button>
             </div>
-            <div class="product-list" id="productList">
-                <!-- Products will be dynamically added here -->
-            </div>
-            <div class="selected-products" id="selectedProducts">
+            <div id="productList" class="product-list"></div>
+            <div id="selectedProducts" class="selected-products">
                 <h3>Selected Products</h3>
-                <!-- Selected products will be dynamically added here -->
             </div>
         </div>
         <button id="saveListBtn">Save List</button>
     </div>
 </div>
+</div>
 </body>
 </html>
+

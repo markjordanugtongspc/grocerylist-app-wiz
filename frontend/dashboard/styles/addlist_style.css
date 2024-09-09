@@ -1,14 +1,19 @@
-body, html {
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+body {
   font-family: 'Roboto', sans-serif;
   background-color: #f0f4f8;
+}
+.container {
+  width: 100%;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
 }
-
 .dashboard {
   background-color: #fff;
   border-radius: 15px;
@@ -17,48 +22,39 @@ body, html {
   max-width: 800px;
   padding: 30px;
 }
-
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
 }
-
 .header h1 {
   font-size: 24px;
   color: #333;
   margin: 0;
 }
-
 .back-arrow, .search-icon {
   text-decoration: none;
   color: #333;
   font-size: 20px;
   transition: color 0.3s ease;
 }
-
 .back-arrow:hover, .search-icon:hover {
   color: #f37979;
 }
-
 .content {
   padding: 20px 0;
 }
-
 .form-group {
   margin-bottom: 25px;
 }
-
 .form-group label {
   display: block;
   margin-bottom: 8px;
   color: #555;
   font-weight: 500;
 }
-
-.form-group input[type="text"],
-.form-group input[type="date"] {
+.form-group input[type="text"], .form-group input[type="date"] {
   width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
@@ -66,19 +62,15 @@ body, html {
   font-size: 16px;
   transition: border-color 0.3s ease;
 }
-
-.form-group input[type="text"]:focus,
-.form-group input[type="date"]:focus {
+.form-group input[type="text"]:focus, .form-group input[type="date"]:focus {
   border-color: #f37979;
   outline: none;
 }
-
 .priority-options {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
 }
-
 .priority-label {
   display: flex;
   align-items: center;
@@ -87,11 +79,13 @@ body, html {
   border-radius: 20px;
   transition: background-color 0.3s ease;
 }
-
 .priority-label:hover {
   background-color: #f0f0f0;
 }
-
+.priority-label.active {
+  background-color: #f37979;
+  color: white;
+}
 .priority-color {
   display: inline-block;
   width: 12px;
@@ -99,38 +93,30 @@ body, html {
   border-radius: 50%;
   margin-right: 8px;
 }
-
 .priority-label.high .priority-color {
   background-color: #ff4d4d;
 }
-
 .priority-label.medium .priority-color {
   background-color: #ffa64d;
 }
-
 .priority-label.low .priority-color {
   background-color: #4dff4d;
 }
-
 .priority-options input[type="radio"] {
   display: none;
 }
-
 .checkbox-group {
   display: flex;
   align-items: center;
 }
-
 .checkbox-group input[type="checkbox"] {
   margin-right: 8px;
 }
-
 .button-group {
   display: flex;
   justify-content: flex-end;
   margin-top: 30px;
 }
-
 button {
   padding: 12px 24px;
   border: none;
@@ -140,59 +126,90 @@ button {
   font-weight: 500;
   transition: background-color 0.3s ease, transform 0.1s ease;
 }
-
 button:active {
   transform: scale(0.98);
 }
-
 .btn-primary {
   background-color: #f37979;
   color: #fff;
   margin-right: 15px;
 }
-
 .btn-primary:hover {
   background-color: #e06666;
 }
-
 .btn-secondary {
   background-color: #e0e0e0;
   color: #333;
 }
-
 .btn-secondary:hover {
   background-color: #d0d0d0;
 }
-
 @media (max-width: 600px) {
   .dashboard {
-    width: 95%;
-    padding: 20px;
+      width: 95%;
+      padding: 20px;
   }
-
   .header h1 {
-    font-size: 20px;
+      font-size: 20px;
   }
-
   .priority-options {
-    flex-direction: column;
-    align-items: flex-start;
+      flex-direction: column;
+      align-items: flex-start;
   }
-
   .priority-label {
-    margin-bottom: 10px;
+      margin-bottom: 10px;
   }
-
   .button-group {
-    flex-direction: column;
+      flex-direction: column;
   }
-
   button {
-    width: 100%;
-    margin-bottom: 10px;
+      width: 100%;
+      margin-bottom: 10px;
   }
-
   .btn-primary {
-    margin-right: 0;
+      margin-right: 0;
   }
+}
+.success-popup {
+  display: none;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #4CAF50;
+  color: rgb(0, 0, 0);
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+.success-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 1s ease;
+}
+.success-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.success-message {
+  background-color: #4CAF50;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 5px;
 }
