@@ -156,6 +156,19 @@ $conn->close();
         <button id="saveListBtn">Save List</button>
     </div>
 </div>
+    <!-- Add this before the closing </body> tag -->
+<div id="viewListModal" class="modal">
+    <div class="modal-content view-list-modal">
+        <span class="close">&times;</span>
+        <h2 id="viewListTitle"></h2>
+        <p id="viewListDueDate"></p>
+        <p id="viewListPriority"></p>
+        <h3>Selected Products:</h3>
+        <ul id="viewListProducts"></ul>
+        <button id="editProductsBtn">Edit Products</button>
+        <button id="deleteListBtn">Delete List</button>
+    </div>
+</div>
 </div>
 </body>
 </html>

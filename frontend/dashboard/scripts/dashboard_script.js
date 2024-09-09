@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.querySelector('.sidebar');
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsModal = document.getElementById('settingsModal');
-    const closeBtn = document.querySelector('.close');
+    const settingsCloseBtn = document.querySelector('.close');
     const settingsForm = document.getElementById('settingsForm');
     const listModal = document.getElementById('listModal');
     const productList = document.getElementById('productList');
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         settingsModal.style.display = 'block';
     });
 
-    closeBtn.addEventListener('click', function() {
+    settingsCloseBtn.addEventListener('click', function() {
         settingsModal.style.display = 'none';
     });
 
@@ -63,11 +63,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const name = item.querySelector('h3').textContent;
             const dueDate = item.querySelector('p').textContent.replace('Due: ', '');
             const priority = item.querySelector('.priority-circle').classList[1];
+            const lastModified = item.getAttribute('data-last-modified');
             
             listsData[id] = {
                 list_name: name,
                 due_date: dueDate,
                 priority: priority,
+                lastModified: lastModified,
                 products: [] // We'll assume products are empty for now
             };
         });
@@ -76,7 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Call this function when the page loads
     fetchListsData();
 
-    // Modified viewList function
     window.viewList = function(listId) {
         currentListId = listId;
         const listDetails = listsData[listId];
@@ -84,6 +85,68 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('List not found.');
             return;
         }
+
+        if (listDetails.lastModified && listDetails.lastModified !== 'null') {
+            // Show the view modal for modified lists
+            const viewListModal = document.getElementById('viewListModal');
+            const modalContent = viewListModal.querySelector('.modal-content');
+
+            modalContent.innerHTML = `
+                <span class="close">&times;</span>
+                <div class="list-header">
+                    <h2>${listDetails.list_name}</h2>
+                    <span class="list-badge ${listDetails.priority.toLowerCase()}">${listDetails.priority}</span>
+                </div>
+                <p class="due-date"><i class="far fa-calendar-alt"></i> Due: ${listDetails.due_date}</p>
+                <div class="product-section">
+                    <h3>Shopping List</h3>
+                    <ul class="product-list">
+                        ${listDetails.products.map(product => `
+                            <li class="product-item">
+                                <span class="product-name">${product.name}</span>
+                                <span class="product-quantity">${product.quantity}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                <div class="action-buttons">
+                    <button id="editProductsBtn" class="btn btn-edit"><i class="fas fa-edit"></i> Edit List</button>
+                    <button id="deleteListBtn" class="btn btn-delete"><i class="fas fa-trash-alt"></i> Delete List</button>
+                </div>
+            `;
+
+            viewListModal.style.display = 'block';
+
+            modalContent.querySelector('.close').addEventListener('click', function() {
+                viewListModal.style.display = 'none';
+            });
+
+            document.getElementById('editProductsBtn').addEventListener('click', function() {
+                viewListModal.style.display = 'none';
+                showListEditModal(listId);
+            });
+
+            document.getElementById('deleteListBtn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete this list?')) {
+                    deleteList(listId);
+                }
+            });
+        } else {
+            // Show the edit modal directly for unmodified lists
+            showListEditModal(listId);
+        }
+    };
+
+    // Allow closing the modal by clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target == viewListModal) {
+            viewListModal.style.display = 'none';
+        }
+    });
+
+    function showListEditModal(listId) {
+        const listDetails = listsData[listId];
+        if (!listDetails) return;
 
         document.getElementById('modalTitle').textContent = `Edit List: ${listDetails.list_name}`;
         document.getElementById('listName').value = listDetails.list_name;
@@ -99,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         listModal.style.display = 'block';
         loadProducts('Fruits'); // Load fruits by default
-    };
+    }
 
     // Modified loadProducts function
     function loadProducts(category) {
@@ -110,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
             productItem.innerHTML = `
                 <img src="${product.image}" alt="${product.name}">
                 <p>${product.name}</p>
-                <p>₱${product.price.toFixed(2)}</p>
+                <p>₱${parseFloat(product.price).toFixed(2)}</p>
                 <button class="add-to-list-btn">Add</button>
             `;
             productItem.querySelector('.add-to-list-btn').addEventListener('click', () => addToSelectedProducts(product));
@@ -134,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const productItem = document.createElement('div');
             productItem.className = 'selected-product';
             productItem.innerHTML = `
-                <span>${product.name} - ₱${product.price.toFixed(2)} <span class="quantity">1</span>x</span>
+                <span>${product.name} - ₱${parseFloat(product.price).toFixed(2)} <span class="quantity">1</span>x</span>
                 <button class="remove-btn">Remove</button>
             `;
             productItem.querySelector('.remove-btn').addEventListener('click', () => productItem.remove());
@@ -151,6 +214,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    function deleteList(listId) {
+        // For now, we'll just remove it from the frontend
+        delete listsData[listId];
+        updateListsUI();
+        viewListModal.style.display = 'none';
+        // You would typically send a request to the server here to delete the list
+    }
+
     // Modified saveListBtn event listener
     saveListBtn.addEventListener('click', function() {
         const listData = {
@@ -159,35 +230,49 @@ document.addEventListener('DOMContentLoaded', function() {
             dueDate: document.getElementById('listDueDate').value,
             priority: document.getElementById('listPriority').value,
             products: Array.from(selectedProducts.querySelectorAll('.selected-product')).map(p => {
-                const [name, price] = p.querySelector('span').textContent.split(' - ');
-                const quantity = p.querySelector('.quantity').textContent;
+                const [name, priceWithCurrency] = p.querySelector('span').textContent.split(' - ');
+                const price = parseFloat(priceWithCurrency.replace('₱', '').trim());
+                const quantity = parseInt(p.querySelector('.quantity').textContent);
                 return { name, price, quantity };
             })
         };
 
-        // Update the listsData object temporarily
-        listsData[currentListId] = {
-            list_name: listData.name,
-            due_date: listData.dueDate,
-            priority: listData.priority,
-            products: listData.products
-        };
+        // Send request to update the list in the backend
+        fetch('../../backend/update_list.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(listData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Update the listsData object
+                listsData[currentListId] = {
+                    list_name: listData.name,
+                    due_date: listData.dueDate,
+                    priority: listData.priority,
+                    lastModified: data.lastModified,
+                    products: listData.products
+                };
 
-        alert('List updated successfully!');
-        listModal.style.display = 'none';
-        updateListsUI(); // Update the UI to reflect changes
-    });
-
-    const closeListModal = listModal.querySelector('.close');
-
-    closeListModal.addEventListener('click', function() {
-        listModal.style.display = 'none';
-    });
-
-    window.addEventListener('click', function(event) {
-        if (event.target == listModal) {
-            listModal.style.display = 'none';
-        }
+                listModal.style.display = 'none';
+                updateListsUI();
+                viewList(currentListId); // Show the view modal after saving
+            } else {
+                throw new Error(data.error || 'Unknown error occurred');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred: ' + error.message);
+        });
     });
 
     // Function to update the UI after editing a list
@@ -199,6 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const listItem = document.createElement('div');
                 listItem.className = 'list-item clickable';
                 listItem.setAttribute('data-id', id);
+                listItem.setAttribute('data-last-modified', list.lastModified || 'null');
                 listItem.onclick = () => viewList(id);
                 listItem.innerHTML = `
                     <h3>${list.list_name}</h3>
@@ -218,6 +304,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load the first category by default
     loadProducts("Fruits");
+
+    // Close modal when clicking the close button
+    const closeBtn = listModal.querySelector('.close');
+    closeBtn.addEventListener('click', function() {
+        listModal.style.display = 'none';
+    });
+
+    // Close modal when clicking outside of it
+    window.addEventListener('click', function(event) {
+        if (event.target == listModal) {
+            listModal.style.display = 'none';
+        }
+        if (event.target == viewListModal) {
+            viewListModal.style.display = 'none';
+        }
+    });
 });
 
 // Add this function at the beginning of your script
