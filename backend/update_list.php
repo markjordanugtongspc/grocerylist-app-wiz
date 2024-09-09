@@ -20,6 +20,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 try {
     $conn->begin_transaction();
 
+    // Update the list details
     $stmt = $conn->prepare("UPDATE GroceryList SET ListName = ?, DueDate = ?, Priority = ?, LastModified = NOW() WHERE ListID = ? AND UserID = (SELECT UserID FROM Users WHERE Username = ?)");
     $stmt->bind_param("sssss", $data['name'], $data['dueDate'], $data['priority'], $data['id'], $_SESSION['username']);
 
@@ -27,19 +28,24 @@ try {
         throw new Exception("Error updating list: " . $stmt->error);
     }
 
-    // We're not handling products in the database for now
-    // You may want to store this information in a separate table in the future
-
-    $stmt = $conn->prepare("SELECT LastModified FROM GroceryList WHERE ListID = ?");
-    $stmt->bind_param("s", $data['id']);
+    // Clear existing products for this list
+    $stmt = $conn->prepare("DELETE FROM ListItems WHERE ListID = ?");
+    $stmt->bind_param("i", $data['id']);
     if (!$stmt->execute()) {
-        throw new Exception("Error fetching LastModified: " . $stmt->error);
+        throw new Exception("Error clearing existing products: " . $stmt->error);
     }
-    $result = $stmt->get_result();
-    $lastModified = $result->fetch_assoc()['LastModified'];
+
+    // Add new products
+    $stmt = $conn->prepare("INSERT INTO ListItems (ListID, ProductName, Price, Quantity) VALUES (?, ?, ?, ?)");
+    foreach ($data['products'] as $product) {
+        $stmt->bind_param("isdi", $data['id'], $product['name'], $product['price'], $product['quantity']);
+        if (!$stmt->execute()) {
+            throw new Exception("Error adding product: " . $stmt->error);
+        }
+    }
 
     $conn->commit();
-    echo json_encode(['success' => true, 'lastModified' => $lastModified]);
+    echo json_encode(['success' => true]);
 
 } catch (Exception $e) {
     $conn->rollback();

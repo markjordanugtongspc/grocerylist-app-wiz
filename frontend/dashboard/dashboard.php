@@ -65,7 +65,7 @@ $conn->close();
                 </div>
             </div>
             <button class="sidebar-btn"><i class="fas fa-home"></i> Home</button>
-            <button class="sidebar-btn"><i class="fas fa-list"></i> My Lists</button>
+            <button class="sidebar-btn" id="addProductsBtn"><i class="fas fa-list"></i> Add Products</button>
             <button class="sidebar-btn"><i class="fas fa-history"></i> History</button>
             <button class="sidebar-btn"><i class="fas fa-star"></i> Favorites</button>
             <button class="sidebar-btn"><i class="fas fa-bell"></i> Notifications</button>
@@ -146,7 +146,7 @@ $conn->close();
             <div class="product-categories">
                 <button class="category-btn active" data-category="Fruits">Fruits</button>
                 <button class="category-btn" data-category="Vegetables">Vegetables</button>
-                <button class="category-btn" data-category="Processed Foods">Processed Foods</button>
+                <button class="category-btn" data-category="Other">Other</button>
             </div>
             <div id="productList" class="product-list"></div>
             <div id="selectedProducts" class="selected-products">
@@ -170,6 +170,86 @@ $conn->close();
     </div>
 </div>
 </div>
+
+<!-- Add this just before the closing </body> tag -->
+<div id="addProductModal" class="modal">
+    <div class="modal-content add-product-modal">
+        <span class="close">&times;</span>
+        <h2>Add New Product</h2>
+        <form id="addProductForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input type="text" id="productName" name="productName" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productBrand">Brand</label>
+                <input type="text" id="productBrand" name="productBrand" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productPrice">Price</label>
+                <input type="number" id="productPrice" name="productPrice" step="0.01" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productWeightVolume">Weight/Volume</label>
+                <input type="text" id="productWeightVolume" name="productWeightVolume" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productQuantity">Quantity</label>
+                <input type="number" id="productQuantity" name="productQuantity" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productStore">Store</label>
+                <input type="text" id="productStore" name="productStore" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productCategory">Category</label>
+                <select id="productCategory" name="productCategory" required class="form-control">
+                    <option value="Fruits">Fruits</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="productImage">Product Image</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="productImage" name="productImage" accept="image/*" class="file-input">
+                    <label for="productImage" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Choose File
+                    </label>
+                    <span class="file-name">No file chosen</span>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Add Product</button>
+        </form>
+    </div>
+</div>
+<!-- Add this just before the closing </body> tag -->
+<div id="editListModal" class="modal">
+    <div class="modal-content edit-list-modal">
+        <span class="close">&times;</span>
+        <h2 id="editListTitle">Edit List: <span id="listName"></span></h2>
+        <div class="category-buttons">
+            <button class="category-btn" data-category="Fruits">Fruits</button>
+            <button class="category-btn" data-category="Vegetables">Vegetables</button>
+            <button class="category-btn" data-category="Other">Other</button>
+        </div>
+        <div id="productList"></div>
+        <div id="selectedProducts"></div>
+        <button id="saveListBtn">Save List</button>
+    </div>
+</div>
+
+<!-- Add this new modal for updated list -->
+<div id="updatedListModal" class="modal">
+    <div class="modal-content updated-list-modal">
+        <span class="close">&times;</span>
+        <h2>Grocery List Updated</h2>
+        <p>Your grocery list has been successfully updated.</p>
+        <button id="closeUpdatedListModal">Close</button>
+    </div>
+</div>
+
+<script src="scripts/dashboard_script.js"></script>
 </body>
 </html>
 
