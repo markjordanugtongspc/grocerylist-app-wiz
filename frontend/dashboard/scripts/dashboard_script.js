@@ -178,6 +178,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="product-quantity">
                         <input type="number" class="product-quantity-input" value="1" min="1" max="999">
                     </span>
+                    <span class="product-quantity">
+                        <input type="number" class="product-quantity-input" value="1" min="1" max="999">
+                    </span>
                     <button class="remove-product" title="Remove">×</button>
                 `;
 
@@ -434,6 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	// Initialize selected products section
 	document.querySelector('.selected-products').innerHTML = `
         <h3>Selected Products</h3>
+        <ul id="selectedProductsList"></ul>
         <ul id="selectedProductsList"></ul>
     `;
 

@@ -38,4 +38,3 @@ if ($list) {
 
 $stmt->close(); // Close the statement
 $conn->close(); // Close the database connection
-?>

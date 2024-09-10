@@ -61,6 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // Check if the form is submitted
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -70,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // Check if the form is submitted
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Add List</title>
 </head>
+
 <body>
     <div class="container">
         <div class="dashboard">
@@ -127,4 +129,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // Check if the form is submitted
     </div>
     <script src="scripts/addlist_script.js"></script> <!-- Link to JavaScript file -->
 </body>
+
 </html>
