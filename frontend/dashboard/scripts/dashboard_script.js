@@ -6,12 +6,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const settingsCloseBtn = document.querySelector('.close');
     const settingsForm = document.getElementById('settingsForm');
     const listModal = document.getElementById('listModal');
+    const modalClose = listModal ? listModal.querySelector('.close') : null;
     const productList = document.getElementById('productList');
     const selectedProducts = document.getElementById('selectedProducts');
     const saveListBtn = document.getElementById('saveListBtn');
     const categoryBtns = document.querySelectorAll('.category-btn');
-    let currentListId;
-    let tempListData = {};
+
+    // Event listeners for modal closing
+    if (modalClose) {
+        modalClose.onclick = function() {
+            listModal.style.display = 'none';
+        }
+    }
+
+    window.onclick = function(event) {
+        if (event.target == listModal) {
+            listModal.style.display = 'none';
+        }
+    }
 
     // Existing event listeners
     hamburger.addEventListener('click', function() {
@@ -41,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadProducts(category) {
         productList.innerHTML = '';
         
-        // Existing products
+       
         const existingProducts = {
             'Fruits': [
                 { ProductName: 'Apple', Price: 4.00, ImageURL: '../../images/products/fruits/apple.jpg' },
@@ -62,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Display existing products
         if (existingProducts[category]) {
             existingProducts[category].forEach(product => {
-                displayProduct(product);
+                displayProduct(product, true);
             });
         }
 
@@ -72,14 +84,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(products => {
                 products.forEach(product => {
                     if (!existingProducts[category] || !existingProducts[category].some(p => p.ProductName === product.ProductName)) {
-                        displayProduct(product);
+                        displayProduct(product, false);
                     }
                 });
             })
             .catch(error => console.error('Error:', error));
     }
 
-    function displayProduct(product) {
+    function displayProduct(product, isExisting) {
         const productItem = document.createElement('div');
         productItem.className = 'product-item';
         productItem.innerHTML = `
@@ -92,15 +104,17 @@ document.addEventListener('DOMContentLoaded', function() {
             <button class="add-to-list-btn">Add</button>
         `;
 
-        productItem.querySelector('.add-to-list-btn').addEventListener('click', () => {
-            addToSelectedProducts(product);
+        productItem.querySelector('.add-to-list-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            addToSelectedProducts({...product, isExisting: isExisting});
         });
 
         productList.appendChild(productItem);
     }
 
     function addToSelectedProducts(product) {
-        const selectedProductsList = document.getElementById('selectedProducts');
+        const selectedProductsList = document.getElementById('selectedProductsList');
         const existingProduct = selectedProductsList.querySelector(`[data-product-name="${product.ProductName}"]`);
     
         if (existingProduct) {
@@ -111,49 +125,61 @@ document.addEventListener('DOMContentLoaded', function() {
             const listItem = document.createElement('li');
             listItem.setAttribute('data-product-name', product.ProductName);
             
-            // Check if it's a pre-existing product or a newly added one
-            if (product.Category === undefined) {
-                // Pre-existing product
+            if (product.isExisting) {
                 listItem.innerHTML = `
                     <span class="product-name">${product.ProductName} - ₱${parseFloat(product.Price).toFixed(2)}</span>
                     <span class="product-quantity">1x</span>
                     <button class="remove-product" title="Remove">×</button>
                 `;
             } else {
-                // Newly added product
                 listItem.innerHTML = `
                     <span class="product-name">${product.ProductName} - ₱${parseFloat(product.Price).toFixed(2)} - ${product.Category}</span>
-                    <input type="number" class="product-quantity" value="1" min="1">
+                    <span class="product-quantity">
+                        <input type="number" class="product-quantity-input" value="1" min="1" max="999">
+                    </span>
                     <button class="remove-product" title="Remove">×</button>
                 `;
     
-                listItem.querySelector('.product-quantity').addEventListener('change', (e) => {
+                listItem.querySelector('.product-quantity-input').addEventListener('change', (e) => {
                     if (e.target.value < 1) e.target.value = 1;
+                    if (e.target.value > 999) e.target.value = 999;
+                    saveListToLocalStorage();
                 });
             }
     
             listItem.querySelector('.remove-product').addEventListener('click', () => {
                 listItem.remove();
+                saveListToLocalStorage();
             });
     
             selectedProductsList.appendChild(listItem);
         }
+    
+        // Save to local storage after adding a product
+        saveListToLocalStorage();
     }
 
-    // Add this function to handle saving the list
-    function saveList() {
+    function saveListToLocalStorage() {
         const listName = document.getElementById('listName').value;
         const listDueDate = document.getElementById('listDueDate').value;
         const listPriority = document.getElementById('listPriority').value;
-        
-        const selectedProductsData = Array.from(selectedProducts.querySelectorAll('.selected-product')).map(item => ({
-            name: item.querySelector('.product-name').textContent,
-            category: item.querySelector('.product-category').textContent,
-            price: parseFloat(item.querySelector('.product-price').textContent.replace('₱', '')),
-            quantity: parseInt(item.querySelector('.quantity-input').value)
-        }));
+        const selectedProductsData = Array.from(document.querySelectorAll('#selectedProductsList li')).map(item => {
+            const [name, price, category] = item.querySelector('.product-name').textContent.split(' - ');
+            return {
+                name: name,
+                price: price.substring(1), // Remove the ₱ symbol
+                category: category || '',
+                quantity: item.querySelector('.product-quantity-input') ? item.querySelector('.product-quantity-input').value : 1
+            };
+        });
 
-        tempListData = {
+        // Check if all required fields are present
+        if (!currentListId || !listName || !listDueDate || !listPriority) {
+            console.error('Missing required fields');
+            return; // Exit the function if required fields are missing
+        }
+
+        const listData = {
             id: currentListId,
             name: listName,
             dueDate: listDueDate,
@@ -161,18 +187,102 @@ document.addEventListener('DOMContentLoaded', function() {
             products: selectedProductsData
         };
 
-        // Store the tempListData in localStorage
-        localStorage.setItem('tempListData', JSON.stringify(tempListData));
+        // Save to local storage
+        localStorage.setItem(`groceryList_${currentListId}`, JSON.stringify(listData));
 
-        // Close the modal
-        listModal.style.display = 'none';
+        // Update the database
+        updateListInDatabase(listData);
+    }
 
-        // Show a success message
-        alert('List saved successfully!');
+    function updateListInDatabase(listData) {
+        console.log('Updating list with data:', listData);
+        // Check if all required fields are present
+        if (!listData.id || !listData.name || !listData.dueDate || !listData.priority || !listData.products) {
+            console.error('Missing required fields in listData');
+            return; // Exit the function if required fields are missing
+        }
+
+        fetch('../../backend/update_list.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(listData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('List updated successfully in the database');
+            } else {
+                console.error('Error updating list in the database:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function saveList(e) {
+        e.preventDefault(); // Prevent form submission
+
+        const listName = document.getElementById('listName').value;
+        const listDueDate = document.getElementById('listDueDate').value;
+        const listPriority = document.getElementById('listPriority').value;
+        const selectedProducts = Array.from(document.querySelectorAll('#selectedProductsList li')).map(item => {
+            const [name, price, category] = item.querySelector('.product-name').textContent.split(' - ');
+            return {
+                ProductName: name,
+                Price: price.substring(1), // Remove the ₱ symbol
+                Category: category || '',
+                Quantity: item.querySelector('.product-quantity-input') ? item.querySelector('.product-quantity-input').value : 1
+            };
+        });
+
+        if (!listName || !listDueDate || !listPriority) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        const updatedList = {
+            id: currentListId,
+            name: listName,
+            dueDate: listDueDate,
+            priority: listPriority,
+            products: selectedProducts
+        };
+
+        fetch('../../backend/update_list.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedList)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('List updated successfully!');
+                document.getElementById('listModal').style.display = 'none';
+                location.reload(); // Refresh the page to show updated list
+            } else {
+                throw new Error('Error updating list: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message || 'An unexpected error occurred. Please try again.');
+        });
     }
 
     // Add event listener for the Save List button
-    document.getElementById('saveListBtn').addEventListener('click', saveList);
+    if (saveListBtn) {
+        saveListBtn.addEventListener('click', saveList);
+    }
+
+    // Add event listeners for list name, due date, and priority inputs
+    document.getElementById('listName').addEventListener('change', saveListToLocalStorage);
+    document.getElementById('listDueDate').addEventListener('change', saveListToLocalStorage);
+    document.getElementById('listPriority').addEventListener('change', saveListToLocalStorage);
 
     // Category button event listeners
     categoryBtns.forEach(btn => {
@@ -187,10 +297,11 @@ document.addEventListener('DOMContentLoaded', function() {
     loadProducts("Fruits");
 
     // Close modal when clicking the close button
-    const closeBtn = listModal.querySelector('.close');
-    closeBtn.addEventListener('click', function() {
-        listModal.style.display = 'none';
-    });
+    if (listModal) {
+        modalClose.addEventListener('click', function() {
+            listModal.style.display = 'none';
+        });
+    }
 
     // Close modal when clicking outside of it
     window.addEventListener('click', function(event) {
@@ -199,18 +310,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Prevent modal from closing when clicking inside it
+    listModal.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+
     const addProductsBtn = document.getElementById('addProductsBtn');
     const addProductModal = document.getElementById('addProductModal');
     const addProductForm = document.getElementById('addProductForm');
-    const addProductCloseBtn = addProductModal.querySelector('.close');
+    const addProductCloseBtn = addProductModal ? addProductModal.querySelector('.close') : null;
 
-    addProductsBtn.addEventListener('click', function() {
-        addProductModal.style.display = 'block';
-    });
+    if (addProductsBtn) {
+        addProductsBtn.addEventListener('click', function() {
+            addProductModal.style.display = 'block';
+        });
+    }
 
-    addProductCloseBtn.addEventListener('click', function() {
-        addProductModal.style.display = 'none';
-    });
+    if (addProductCloseBtn) {
+        addProductCloseBtn.addEventListener('click', function() {
+            addProductModal.style.display = 'none';
+        });
+    }
 
     window.addEventListener('click', function(event) {
         if (event.target == addProductModal) {
@@ -218,48 +338,81 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    addProductForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
+    if (addProductForm) {
+        addProductForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
 
-        fetch('../../backend/add_product.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Product added successfully!');
-                addProductModal.style.display = 'none';
-                addProductForm.reset();
-                // Optionally, refresh the product list here
-            } else {
-                alert('Error: ' + data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while adding the product.');
+            fetch('../../backend/add_product.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Product added successfully!');
+                    addProductModal.style.display = 'none';
+                    addProductForm.reset();
+                    // Optionally, refresh the product list here
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding the product.');
+            });
         });
-    });
+    }
 
     // Update file input display
     const productImageInput = document.getElementById('productImage');
-    const productImageFileName = addProductModal.querySelector('.file-name');
+    const productImageFileName = addProductModal ? addProductModal.querySelector('.file-name') : null;
 
-    productImageInput.addEventListener('change', function() {
-        if (this.files && this.files.length > 0) {
-            productImageFileName.textContent = this.files[0].name;
-        } else {
-            productImageFileName.textContent = 'No file chosen';
-        }
-    });
+    if (productImageInput && productImageFileName) {
+        productImageInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                productImageFileName.textContent = this.files[0].name;
+            } else {
+                productImageFileName.textContent = 'No file chosen';
+            }
+        });
+    }
 
     // Update the HTML to include the "Selected Products" text
     document.querySelector('.selected-products').innerHTML = `
         <h3>Selected Products</h3>
-        <ul id="selectedProducts"></ul>
+        <ul id="selectedProductsList"></ul>
     `;
+
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newUsername = document.getElementById('newUsername').value;
+
+            fetch('../../backend/update_username.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ newUsername: newUsername })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Username updated successfully!');
+                    document.getElementById('usernameDisplay').textContent = newUsername;
+                    settingsModal.style.display = 'none';
+                } else {
+                    alert('Error updating username: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An unexpected error occurred. Please try again.');
+            });
+        });
+    }
 });
 
 // Add this function at the beginning of your script
@@ -273,66 +426,56 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('newAvatar');
     const fileName = document.querySelector('.file-name');
 
-    fileInput.addEventListener('change', function() {
-        if (this.files && this.files.length > 0) {
-            fileName.textContent = this.files[0].name;
-        } else {
-            fileName.textContent = 'No file chosen';
-        }
-    });
+    if (fileInput && fileName) {
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+            } else {
+                fileName.textContent = 'No file chosen';
+            }
+        });
+    }
 });
 
 // Add these variables at the top of your file
-const listModal = document.getElementById('listModal');
-const modalClose = listModal.querySelector('.close');
+let currentListId;
+let tempListData = {};
 
 // Add this function to handle viewing a list
 function viewList(listId) {
     currentListId = listId;
-    
-    // Fetch the list details from the server
+    console.log('Current List ID:', currentListId);
     fetch(`../../backend/get_list_details.php?listId=${listId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const listModal = document.getElementById('listModal');
-                const listName = document.getElementById('listName');
-                const listDueDate = document.getElementById('listDueDate');
-                const listPriority = document.getElementById('listPriority');
-                const selectedProducts = document.getElementById('selectedProducts');
-
-                if (listModal && listName && listDueDate && listPriority && selectedProducts) {
-                    // Populate the modal with list details
-                    listName.value = data.list.ListName;
-                    listDueDate.value = data.list.DueDate;
-                    listPriority.value = data.list.Priority;
-                    
-                    // Clear existing products
-                    selectedProducts.innerHTML = '';
-                    
-                    // Add products to the selected products list
-                    data.list.products.forEach(product => addToSelectedProducts(product));
-                    
-                    // Show the modal
-                    listModal.style.display = 'block';
-                } else {
-                    console.error('One or more required elements are missing from the DOM');
-                    alert('Error: Unable to display list details. Please try again later.');
-                }
+                const list = data.list;
+                document.getElementById('listName').value = list.ListName;
+                
+                // Format the date to yyyy-MM-dd
+                const dueDate = new Date(list.DueDate);
+                const formattedDate = dueDate.toISOString().split('T')[0];
+                document.getElementById('listDueDate').value = formattedDate;
+                
+                document.getElementById('listPriority').value = list.Priority.toLowerCase();
+                
+                // Show the modal
+                document.getElementById('listModal').style.display = 'block';
             } else {
-                console.error('Error fetching list details:', data.error);
                 alert('Error fetching list details: ' + data.error);
             }
         })
         .catch(error => {
-            console.error('Fetch error:', error);
-            alert('An unexpected error occurred. Please check the console for more details.');
+            console.error('Error:', error);
+            alert('An unexpected error occurred. Please try again.');
         });
 }
 
 // Close the modal when the close button is clicked
-modalClose.onclick = function() {
-    listModal.style.display = 'none';
+if (modalClose) {
+    modalClose.onclick = function() {
+        listModal.style.display = 'none';
+    }
 }
 
 // Close the modal when clicking outside of it
@@ -350,5 +493,46 @@ document.addEventListener('DOMContentLoaded', function() {
             const listId = this.getAttribute('data-id');
             viewList(listId);
         });
+    });
+});
+
+// Modify the Save List button event listener
+document.getElementById('saveListBtn').addEventListener('click', function() {
+    const listName = document.getElementById('listName').value;
+    const listDueDate = document.getElementById('listDueDate').value;
+    const listPriority = document.getElementById('listPriority').value;
+
+    if (!listName || !listDueDate || !listPriority || !currentListId) {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    const updatedList = {
+        id: currentListId,
+        name: listName,
+        dueDate: listDueDate,
+        priority: listPriority
+    };
+
+    fetch('../../backend/update_list.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedList)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('List updated successfully!');
+            document.getElementById('listModal').style.display = 'none';
+            location.reload(); // Refresh the page to show updated list
+        } else {
+            alert('Error updating list: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An unexpected error occurred. Please try again.');
     });
 });

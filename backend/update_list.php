@@ -9,48 +9,51 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-$input = file_get_contents('php://input');
-$data = json_decode($input, true);
+$input = json_decode(file_get_contents('php://input'), true);
 
-if (json_last_error() !== JSON_ERROR_NONE) {
-    echo json_encode(['success' => false, 'error' => 'Invalid JSON input']);
+if (!isset($input['id']) || !isset($input['name']) || !isset($input['dueDate']) || !isset($input['priority']) || !isset($input['products'])) {
+    echo json_encode(['success' => false, 'error' => 'Missing required fields']);
     exit();
 }
 
+$listId = $input['id'];
+$listName = $input['name'];
+$dueDate = $input['dueDate'];
+$priority = $input['priority'];
+$products = $input['products'];
+
+// Convert the date to MySQL datetime format
+$formattedDueDate = date('Y-m-d H:i:s', strtotime($dueDate));
+
+$conn->begin_transaction();
+
 try {
-    $conn->begin_transaction();
-
     // Update the list details
-    $stmt = $conn->prepare("UPDATE GroceryList SET ListName = ?, DueDate = ?, Priority = ?, LastModified = NOW() WHERE ListID = ? AND UserID = (SELECT UserID FROM Users WHERE Username = ?)");
-    $stmt->bind_param("sssss", $data['name'], $data['dueDate'], $data['priority'], $data['id'], $_SESSION['username']);
+    $stmt = $conn->prepare("UPDATE grocerylist SET ListName = ?, DueDate = ?, Priority = ?, LastModified = NOW() WHERE ListID = ? AND UserID = (SELECT UserID FROM Users WHERE Username = ?)");
+    $stmt->bind_param("sssss", $listName, $formattedDueDate, $priority, $listId, $_SESSION['username']);
+    $stmt->execute();
 
-    if (!$stmt->execute()) {
-        throw new Exception("Error updating list: " . $stmt->error);
-    }
+    // Delete existing products for this list
+    $stmt = $conn->prepare("DELETE FROM selectedproducts WHERE ListID = ?");
+    $stmt->bind_param("i", $listId);
+    $stmt->execute();
 
-    // Clear existing products for this list
-    $stmt = $conn->prepare("DELETE FROM ListItems WHERE ListID = ?");
-    $stmt->bind_param("i", $data['id']);
-    if (!$stmt->execute()) {
-        throw new Exception("Error clearing existing products: " . $stmt->error);
-    }
-
-    // Add new products
-    $stmt = $conn->prepare("INSERT INTO ListItems (ListID, ProductName, Price, Quantity) VALUES (?, ?, ?, ?)");
-    foreach ($data['products'] as $product) {
-        $stmt->bind_param("isdi", $data['id'], $product['name'], $product['price'], $product['quantity']);
-        if (!$stmt->execute()) {
-            throw new Exception("Error adding product: " . $stmt->error);
-        }
+    // Insert new products
+    $stmt = $conn->prepare("INSERT INTO selectedproducts (ListID, ProductName, Quantity) VALUES (?, ?, ?)");
+    foreach ($products as $product) {
+        $productName = $product['name'];
+        $quantity = $product['quantity'];
+        $stmt->bind_param("isi", $listId, $productName, $quantity);
+        $stmt->execute();
     }
 
     $conn->commit();
     echo json_encode(['success' => true]);
-
 } catch (Exception $e) {
     $conn->rollback();
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
 }
 
 $stmt->close();
 $conn->close();
+?>

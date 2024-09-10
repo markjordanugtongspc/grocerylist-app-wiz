@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $username = $_SESSION['username'];
     $list_name = trim($_POST['list-name']);
-    $due_date = $_POST['due-date'];
+    $due_date = !empty($_POST['due-date']) ? $_POST['due-date'] : '2024-09-06';
     $priority = $_POST['priority'];
     $is_default = isset($_POST['default']) ? 1 : 0;
 

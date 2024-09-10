@@ -249,7 +249,14 @@ $conn->close();
     </div>
 </div>
 
+<div id="selectedProductsModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSelectedProductsModal()">&times;</span>
+        <h2>Selected Products</h2>
+        <ul id="selectedProductsList"></ul>
+    </div>
+</div>
+
 <script src="scripts/dashboard_script.js"></script>
 </body>
 </html>
-
