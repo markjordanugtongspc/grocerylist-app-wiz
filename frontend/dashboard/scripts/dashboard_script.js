@@ -13,6 +13,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	const saveListBtn = document.getElementById('saveListBtn');
 	const categoryBtns = document.querySelectorAll('.category-btn');
 
+	const sortDropdown = document.getElementById('sortDropdown');
+
+	// Add event listeners for sort dropdown
+	if (sortDropdown) {
+		sortDropdown.addEventListener('change', sortProducts);
+	}
+
 	// Close the list modal when clicking the close button or outside the modal
 	if (modalClose) {
 		modalClose.onclick = function() {
@@ -123,6 +130,8 @@ document.addEventListener('DOMContentLoaded', function() {
 						displayProduct(product, false); // Mark as new
 					}
 				});
+				// Store all products for sorting
+				window.allProducts = [...Object.values(existingProducts).flat(), ...products];
 			})
 			.catch(error => console.error('Error:', error));
 	}
@@ -131,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	function displayProduct(product, isExisting) {
 		const productItem = document.createElement('div');
 		productItem.className = 'product-item';
+		productItem.setAttribute('data-category', product.Category || (isExisting ? product.ProductName.split(' ')[0] : 'Other'));
 		productItem.innerHTML = `
             <img src="${product.ImageURL || '../../images/products/default.jpg'}" alt="${product.ProductName}">
             <p class="product-name">${product.ProductName}</p>
@@ -152,6 +162,35 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 
 		productList.appendChild(productItem); // Add product item to the product list
+	}
+
+	// Add new sortProducts function
+	function sortProducts() {
+		const sortValue = sortDropdown.value;
+
+		let sortedProducts = [...window.allProducts];
+
+		// Apply sort
+		switch (sortValue) {
+			case 'priceLowHigh':
+				sortedProducts.sort((a, b) => parseFloat(a.Price) - parseFloat(b.Price));
+				break;
+			case 'priceHighLow':
+				sortedProducts.sort((a, b) => parseFloat(b.Price) - parseFloat(a.Price));
+				break;
+			case 'nameAZ':
+				sortedProducts.sort((a, b) => a.ProductName.localeCompare(b.ProductName));
+				break;
+			case 'nameZA':
+				sortedProducts.sort((a, b) => b.ProductName.localeCompare(a.ProductName));
+				break;
+		}
+
+		// Clear and repopulate the product list
+		productList.innerHTML = '';
+		sortedProducts.forEach(product => {
+			displayProduct(product, product.isExisting);
+		});
 	}
 
 	// Add a product to the selected products list

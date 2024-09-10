@@ -160,6 +160,15 @@ $conn->close(); // Close the database connection
                         <button class="category-btn" data-category="Vegetables">Vegetables</button>
                         <button class="category-btn" data-category="Other">Other</button>
                     </div>
+                    <div class="sort-filter-container">
+                        <select id="sortDropdown">
+                            <option value="">Sort by...</option>
+                            <option value="priceLowHigh">Price: Low to High</option>
+                            <option value="priceHighLow">Price: High to Low</option>
+                            <option value="nameAZ">Name: A to Z</option>
+                            <option value="nameZA">Name: Z to A</option>
+                        </select>
+                    </div>
                     <div id="productList" class="product-list"></div> <!-- Display area for products -->
                     <div id="selectedProducts" class="selected-products">
                         <h3>Selected Products</h3>
