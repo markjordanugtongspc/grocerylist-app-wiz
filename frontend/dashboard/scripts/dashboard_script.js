@@ -120,6 +120,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (existingProduct) {
             // If the product already exists, don't do anything
             return;
+            // If the product already exists, don't do anything
+            return;
         } else {
             // Add new product to the list
             const listItem = document.createElement('li');
