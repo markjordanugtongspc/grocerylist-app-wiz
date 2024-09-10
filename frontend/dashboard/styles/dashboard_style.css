@@ -1366,3 +1366,23 @@ span.product-quantity {
 .message-popup.error {
   background-color: #f44336;
 }
+
+.sort-filter-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.sort-filter-container select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sort-filter-container select:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
