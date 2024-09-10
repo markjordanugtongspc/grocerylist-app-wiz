@@ -241,6 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (!listName || !listDueDate || !listPriority) {
+
             showErrorMessage('Please fill in all fields');
             return;
         }
@@ -499,7 +500,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
 // Add these functions at the beginning of your script
 function showSuccessMessage(message) {
     showMessage(message, 'success');
