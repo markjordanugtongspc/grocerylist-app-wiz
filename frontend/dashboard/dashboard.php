@@ -67,7 +67,6 @@ $conn->close();
             </div>
             <button class="sidebar-btn"><i class="fas fa-home"></i> Home</button>
             <button class="sidebar-btn" id="addProductsBtn"><i class="fas fa-list"></i> Add Products</button>
-            <button class="sidebar-btn" id="addProductsBtn"><i class="fas fa-list"></i> Add Products</button>
             <button class="sidebar-btn"><i class="fas fa-history"></i> History</button>
             <button class="sidebar-btn"><i class="fas fa-star"></i> Favorites</button>
             <button class="sidebar-btn"><i class="fas fa-bell"></i> Notifications</button>
