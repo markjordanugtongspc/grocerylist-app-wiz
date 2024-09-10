@@ -1345,3 +1345,24 @@ span.product-quantity {
 #closeUpdatedListModal:hover {
   background-color: #45a049;
 }
+.message-popup {
+  display: none;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  z-index: 2000; /* Increased z-index to appear above modals */
+  transition: opacity 0.3s ease-in-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow */
+}
+
+.message-popup.success {
+  background-color: #4CAF50;
+}
+
+.message-popup.error {
+  background-color: #f44336;
+}

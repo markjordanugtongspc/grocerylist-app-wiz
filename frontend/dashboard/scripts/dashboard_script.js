@@ -241,7 +241,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (!listName || !listDueDate || !listPriority) {
-            alert('Please fill in all fields');
+
+            showErrorMessage('Please fill in all fields');
             return;
         }
 
@@ -263,16 +264,18 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('List updated successfully!');
+                showSuccessMessage('List updated successfully!');
                 document.getElementById('listModal').style.display = 'none';
-                location.reload(); // Refresh the page to show updated list
+                setTimeout(() => {
+                    location.reload(); // Refresh the page to show updated list
+                }, 3000); // Wait for 3 seconds before reloading
             } else {
-                throw new Error('Error updating list: ' + data.error);
+                showErrorMessage('Error updating list: ' + data.error);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert(error.message || 'An unexpected error occurred. Please try again.');
+            showErrorMessage('An unexpected error occurred. Please try again.');
         });
     }
 
@@ -352,17 +355,17 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Product added successfully!');
+                    showSuccessMessage('Product added successfully!');
                     addProductModal.style.display = 'none';
                     addProductForm.reset();
                     // Optionally, refresh the product list here
                 } else {
-                    alert('Error: ' + data.error);
+                    showErrorMessage('Error: ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while adding the product.');
+                showErrorMessage('An error occurred while adding the product.');
             });
         });
     }
@@ -402,16 +405,16 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Username updated successfully!');
+                    showSuccessMessage('Username updated successfully!');
                     document.getElementById('usernameDisplay').textContent = newUsername;
                     settingsModal.style.display = 'none';
                 } else {
-                    alert('Error updating username: ' + data.error);
+                    showErrorMessage('Error updating username: ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An unexpected error occurred. Please try again.');
+                showErrorMessage('An unexpected error occurred. Please try again.');
             });
         });
     }
@@ -464,12 +467,12 @@ function viewList(listId) {
                 // Show the modal
                 document.getElementById('listModal').style.display = 'block';
             } else {
-                alert('Error fetching list details: ' + data.error);
+                showErrorMessage('Error fetching list details: ' + data.error);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An unexpected error occurred. Please try again.');
+            showErrorMessage('An unexpected error occurred. Please try again.');
         });
 }
 
@@ -497,6 +500,39 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+// Add these functions at the beginning of your script
+function showSuccessMessage(message) {
+    showMessage(message, 'success');
+}
+
+function showErrorMessage(message) {
+    showMessage(message, 'error');
+}
+
+function showMessage(message, type) {
+    const popup = document.getElementById('messagePopup');
+    const messageElement = document.getElementById('popupMessage');
+    
+    if (!popup || !messageElement) {
+        console.error('Popup elements not found');
+        return;
+    }
+
+    messageElement.textContent = message;
+    popup.className = `message-popup ${type}`;
+    popup.style.display = 'block';
+    popup.style.opacity = '1';
+    
+    // Ensure the popup is at the top of the stacking order
+    document.body.appendChild(popup);
+    
+    setTimeout(() => {
+        popup.style.opacity = '0';
+        setTimeout(() => {
+            popup.style.display = 'none';
+        }, 300); // Short delay for fade-out effect
+    }, 3000); // 3 seconds delay
+}
 
 // Modify the Save List button event listener
 document.getElementById('saveListBtn').addEventListener('click', function() {
@@ -505,7 +541,7 @@ document.getElementById('saveListBtn').addEventListener('click', function() {
     const listPriority = document.getElementById('listPriority').value;
 
     if (!listName || !listDueDate || !listPriority || !currentListId) {
-        alert('Please fill in all fields');
+        showErrorMessage('Please fill in all fields');
         return;
     }
 
@@ -526,15 +562,17 @@ document.getElementById('saveListBtn').addEventListener('click', function() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('List updated successfully!');
+            showSuccessMessage('List updated successfully!');
             document.getElementById('listModal').style.display = 'none';
-            location.reload(); // Refresh the page to show updated list
+            setTimeout(() => {
+                location.reload(); // Refresh the page to show updated list
+            }, 3000); // Wait for 3 seconds before reloading
         } else {
-            alert('Error updating list: ' + data.error);
+            showErrorMessage('Error updating list: ' + data.error);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An unexpected error occurred. Please try again.');
+        showErrorMessage('An unexpected error occurred. Please try again.');
     });
 });

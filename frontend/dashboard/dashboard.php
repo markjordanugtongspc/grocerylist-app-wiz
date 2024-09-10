@@ -52,6 +52,9 @@ $conn->close();
 <body>
     <div class="container">
     <div class="dashboard <?php echo !empty($lists) ? 'has-lists' : ''; ?>">
+    <div id="messagePopup" class="message-popup">
+        <p id="popupMessage"></p>
+    </div>
     <div class="header">
         <div class="hamburger">☰</div>
         <div class="text-wrapper">Grocery List</div>
