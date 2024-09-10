@@ -1,39 +1,39 @@
 <?php
 session_start();
 
-// Check if the user is logged in
-if (!isset($_SESSION['username'])) {
+// Check if the user is logged in; redirect to login page if not
+if (!isset($_SESSION["username"])) {
     header("Location: ../../index.php?error=please%login%first");
-    exit();
+    exit(); // Stop script execution after redirect
 }
 
-// Fetch the user's lists from the database
-require_once '../../backend/database/config.php';
-$username = $_SESSION['username'];
+// Require database configuration
+require_once "../../backend/database/config.php";
+$username = $_SESSION["username"];
 
-// First, get the UserID
+// Prepare SQL statement to get the UserID based on the logged-in username
 $stmt = $conn->prepare("SELECT UserID FROM Users WHERE Username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
-$stmt->close();
+$stmt->close(); // Close the statement
 
+// Check if user exists
 if (!$user) {
-    die("User not found");
+    die("User not found"); // Stop script execution if user is not found
 }
 
-$userId = $user['UserID'];
+$userId = $user["UserID"]; // Store the UserID for later use
 
-// Now fetch the grocery lists for this user
-// Remove the ORDER BY clause for now
+// Fetch grocery lists for the user from the database
 $stmt = $conn->prepare("SELECT * FROM GroceryList WHERE UserID = ?");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
-$lists = $result->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
-$conn->close();
+$lists = $result->fetch_all(MYSQLI_ASSOC); // Fetch all lists associated with the user
+$stmt->close(); // Close the statement
+$conn->close(); // Close the database connection
 ?>
 
 <!DOCTYPE html>
@@ -43,31 +43,30 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="styles/dashboard_style.css" />
     <link rel="icon" href="../../images/grocery.ico" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Dashboard</title>
 </head>
 <body>
     <div class="container">
     <div class="dashboard <?php echo !empty($lists) ? 'has-lists' : ''; ?>">
     <div id="messagePopup" class="message-popup">
-        <p id="popupMessage"></p>
+        <p id="popupMessage"></p> <!-- Message display for user feedback -->
     </div>
     <div class="header">
-        <div class="hamburger">☰</div>
+        <div class="hamburger">☰</div> <!-- Hamburger icon for sidebar -->
         <div class="text-wrapper">Grocery List</div>
     </div>
         <div class="sidebar">
             <div class="user-profile">
                 <div class="avatar-container">
-                    <i class="fas fa-user-circle"></i>
+                    <i class="fas fa-user-circle"></i> <!-- User avatar icon -->
                 </div>
                 <div class="nameplate">
-                    <p id="usernameDisplay"><?php echo $_SESSION['username']; ?></p>
+                    <p id="usernameDisplay"><?php echo $_SESSION['username']; ?></p> <!-- Display logged-in username -->
                 </div>
             </div>
+            <!-- Sidebar navigation buttons -->
             <button class="sidebar-btn"><i class="fas fa-home"></i> Home</button>
             <button class="sidebar-btn" id="addProductsBtn"><i class="fas fa-list"></i> Add Products</button>
             <button class="sidebar-btn"><i class="fas fa-history"></i> History</button>
@@ -80,37 +79,40 @@ $conn->close();
         <div class="content" id="listContent">
             <div class="content-wrapper">
                 <?php if (empty($lists)): ?>
+                    <!-- Message for empty list state -->
                     <img src="../../images/dashboard/image-1.png" alt="Background 1" class="image-1">
                     <img src="../../images/dashboard/image-2.png" alt="Background 2" class="image-2">
                     <img src="../../images/dashboard/image.png" alt="Center Image" class="image">
                     <div class="text-wrapper-2">Your List is Empty</div>
                     <p class="p">Create a list and add items to your trolley for an easier grocery experience</p>
-                    <a href="addlist.php" class="rectangle">Add List</a>
+                    <a href="addlist.php" class="rectangle">Add List</a> <!-- Link to add a new list -->
                 <?php else: ?>
                     <div class="list-container">
                         <?php foreach ($lists as $list): ?>
+                            <!-- List item that is clickable to view details -->
                             <div class="list-item clickable" data-id="<?php echo $list['ListID']; ?>" onclick="viewList(<?php echo $list['ListID']; ?>)">
-                                <h3><?php echo htmlspecialchars($list['ListName']); ?></h3>
-                                <p>Due: <?php echo $list['DueDate']; ?></p>
+                                <h3><?php echo htmlspecialchars($list['ListName']); ?></h3> <!-- Display list name -->
+                                <p>Due: <?php echo $list['DueDate']; ?></p> <!-- Display due date -->
                                 <p class="priority">
                                     <span class="priority-circle <?php echo strtolower($list['Priority']); ?>"></span>
-                                    Priority: <?php echo ucfirst($list['Priority']); ?>
+                                    Priority: <?php echo ucfirst($list['Priority']); ?> <!-- Display priority level -->
                                 </p>
                                 <?php if ($list['IsDefault']): ?>
-                                    <span class="default-badge">Default</span>
+                                    <span class="default-badge">Default</span> <!-- Indicate if this is a default list -->
                                 <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    <a href="addlist.php" class="rectangle">Add New List</a>
+                    <a href="addlist.php" class="rectangle">Add New List</a> <!-- Link to add a new grocery list -->
                 <?php endif; ?>
             </div>
         </div>
     </div>
-    <!-- Add this at the end of the body tag -->
+
+    <!-- Modal for profile settings -->
 <div id="settingsModal" class="modal">
     <div class="modal-content settings-modal">
-        <span class="close">&times;</span>
+        <span class="close">&times;</span> <!-- Close button -->
         <h2>Profile Settings</h2>
         <form id="settingsForm" enctype="multipart/form-data">
             <div class="form-group">
@@ -131,55 +133,59 @@ $conn->close();
         </form>
     </div>
 </div>
+
     <script src="scripts/dashboard_script.js"></script>
-    <!-- Add this just before the closing </body> tag -->
+    
+    <!-- Modal for editing a grocery list -->
 <div id="listModal" class="modal">
     <div class="modal-content list-edit-modal">
-        <span class="close">&times;</span>
+        <span class="close">&times;</span> <!-- Close button -->
         <h2 id="modalTitle">Edit List</h2>
         <div class="list-edit-container">
             <div class="list-details">
-                <input type="text" id="listName" placeholder="List Name">
-                <input type="date" id="listDueDate">
-                <select id="listPriority">
+                <input type="text" id="listName" placeholder="List Name"> <!-- Input for list name -->
+                <input type="date" id="listDueDate"> <!-- Input for due date -->
+                <select id="listPriority"> <!-- Dropdown for priority selection -->
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
                 </select>
             </div>
             <div class="product-categories">
+                <!-- Category buttons for product selection -->
                 <button class="category-btn active" data-category="Fruits">Fruits</button>
                 <button class="category-btn" data-category="Vegetables">Vegetables</button>
                 <button class="category-btn" data-category="Other">Other</button>
-                <button class="category-btn" data-category="Other">Other</button>
             </div>
-            <div id="productList" class="product-list"></div>
+            <div id="productList" class="product-list"></div> <!-- Display area for products -->
             <div id="selectedProducts" class="selected-products">
                 <h3>Selected Products</h3>
             </div>
         </div>
-        <button id="saveListBtn">Save List</button>
+        <button id="saveListBtn">Save List</button> <!-- Button to save the edited list -->
     </div>
 </div>
-    <!-- Add this before the closing </body> tag -->
+
+    <!-- Modal for viewing list details -->
 <div id="viewListModal" class="modal">
     <div class="modal-content view-list-modal">
-        <span class="close">&times;</span>
+        <span class="close">&times;</span> <!-- Close button -->
         <h2 id="viewListTitle"></h2>
         <p id="viewListDueDate"></p>
         <p id="viewListPriority"></p>
         <h3>Selected Products:</h3>
-        <ul id="viewListProducts"></ul>
-        <button id="editProductsBtn">Edit Products</button>
-        <button id="deleteListBtn">Delete List</button>
+        <ul id="viewListProducts"></ul> <!-- List of selected products -->
+        <button id="editProductsBtn">Edit Products</button> <!-- Button to edit products -->
+        <button id="deleteListBtn">Delete List</button> <!-- Button to delete the list -->
     </div>
 </div>
+
 </div>
 
-<!-- Add this just before the closing </body> tag -->
+<!-- Modal for adding a new product -->
 <div id="addProductModal" class="modal">
     <div class="modal-content add-product-modal">
-        <span class="close">&times;</span>
+        <span class="close">&times;</span> <!-- Close button -->
         <h2>Add New Product</h2>
         <form id="addProductForm" enctype="multipart/form-data">
             <div class="form-group">
@@ -224,41 +230,42 @@ $conn->close();
                     <span class="file-name">No file chosen</span>
                 </div>
             </div>
-            <button type="submit" class="btn-submit">Add Product</button>
+            <button type="submit" class="btn-submit">Add Product</button> <!-- Button to submit new product -->
         </form>
     </div>
 </div>
-<!-- Add this just before the closing </body> tag -->
+
+<!-- Modal for editing a specific list -->
 <div id="editListModal" class="modal">
     <div class="modal-content edit-list-modal">
-        <span class="close">&times;</span>
-        <h2 id="editListTitle">Edit List: <span id="listName"></span></h2>
+        <span class="close">&times;</span> <!-- Close button -->
+        <h2 id="editListTitle">Edit List: <span id="listName"></span></h2> <!-- Title showing the list name -->
         <div class="category-buttons">
             <button class="category-btn" data-category="Fruits">Fruits</button>
             <button class="category-btn" data-category="Vegetables">Vegetables</button>
             <button class="category-btn" data-category="Other">Other</button>
         </div>
-        <div id="productList"></div>
-        <div id="selectedProducts"></div>
-        <button id="saveListBtn">Save List</button>
+        <div id="productList"></div> <!-- Display area for products -->
+        <div id="selectedProducts"></div> <!-- Area showing selected products -->
+        <button id="saveListBtn">Save List</button> <!-- Button to save the edited list -->
     </div>
 </div>
 
-<!-- Add this new modal for updated list -->
+<!-- Modal for confirming that the grocery list has been updated -->
 <div id="updatedListModal" class="modal">
     <div class="modal-content updated-list-modal">
-        <span class="close">&times;</span>
+        <span class="close">&times;</span> <!-- Close button -->
         <h2>Grocery List Updated</h2>
         <p>Your grocery list has been successfully updated.</p>
-        <button id="closeUpdatedListModal">Close</button>
+        <button id="closeUpdatedListModal">Close</button> <!-- Button to close the modal -->
     </div>
 </div>
 
 <div id="selectedProductsModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeSelectedProductsModal()">&times;</span>
+        <span class="close" onclick="closeSelectedProductsModal()">&times;</span> <!-- Close button -->
         <h2>Selected Products</h2>
-        <ul id="selectedProductsList"></ul>
+        <ul id="selectedProductsList"></ul> <!-- Display list of selected products -->
     </div>
 </div>
 
