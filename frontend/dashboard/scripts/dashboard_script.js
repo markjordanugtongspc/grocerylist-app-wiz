@@ -178,9 +178,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="product-quantity">
                         <input type="number" class="product-quantity-input" value="1" min="1" max="999">
                     </span>
-                    <span class="product-quantity">
-                        <input type="number" class="product-quantity-input" value="1" min="1" max="999">
-                    </span>
                     <button class="remove-product" title="Remove">×</button>
                 `;
 
