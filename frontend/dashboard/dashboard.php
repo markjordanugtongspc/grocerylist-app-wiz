@@ -160,7 +160,6 @@ $conn->close(); // Close the database connection
                         <button class="category-btn active" data-category="Fruits">Fruits</button>
                         <button class="category-btn" data-category="Vegetables">Vegetables</button>
                         <button class="category-btn" data-category="Other">Other</button>
-                        <button class="category-btn" data-category="Other">Other</button>
                     </div>
                     <div id="productList" class="product-list"></div> <!-- Display area for products -->
                     <div id="selectedProducts" class="selected-products">
