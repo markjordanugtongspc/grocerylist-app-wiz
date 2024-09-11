@@ -2106,3 +2106,22 @@ span.product-quantity {
   animation: fadeOut 0.5s ease-out forwards;
 }
 
+.shopping-list-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  padding: 10px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+#shoppingListTotal {
+  font-weight: bold;
+  color: #4CAF50;
+}

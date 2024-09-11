@@ -9,9 +9,8 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-$listId = intval($_GET['listId']); // Get the list ID from the request
+$listId = intval($_GET['listId']);
 
-// Prepare and execute SQL statement to fetch selected products with a LEFT JOIN
 $stmt = $conn->prepare("
     SELECT 
         sp.ProductName, 
@@ -19,7 +18,8 @@ $stmt = $conn->prepare("
         sp.IsPurchased,
         COALESCE(gi.Brand, '') AS Brand, 
         COALESCE(gi.WeightVolume, '') AS WeightVolume, 
-        COALESCE(gi.Store, '') AS Store
+        COALESCE(gi.Store, '') AS Store,
+        COALESCE(gi.Price, 0) AS Price
     FROM 
         selectedproducts sp
     LEFT JOIN 
@@ -30,7 +30,7 @@ $stmt = $conn->prepare("
 $stmt->bind_param("i", $listId);
 $stmt->execute();
 $result = $stmt->get_result();
-$products = $result->fetch_all(MYSQLI_ASSOC); // Fetch all products for the list
+$products = $result->fetch_all(MYSQLI_ASSOC);
 
 echo json_encode(['success' => true, 'products' => $products]);
 $stmt->close();
