@@ -258,6 +258,9 @@ $conn->close(); // Close the database connection
             <thead>
                 <tr>
                     <th>Product Name</th>
+                    <th>Brand</th>
+                    <th>Weight/Volume</th>
+                    <th>Store</th>
                     <th>Quantity</th>
                 </tr>
             </thead>
