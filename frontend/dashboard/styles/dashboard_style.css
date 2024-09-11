@@ -1386,3 +1386,106 @@ span.product-quantity {
   outline: none;
   border-color: #4CAF50;
 }
+
+/* Modernized Modal For Shopping List */
+.shopping-list-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Darker background for better focus */
+  display: none; /* Hidden by default */
+  align-items: center; /* Center content vertically */
+  justify-content: center; /* Center content horizontally */
+  z-index: 1000;
+  overflow: auto;
+}
+
+.shopping-list-modal-content {
+  position: relative;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  max-width: 650px;
+  width: 90%;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.modal-subtitle {
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.modal-table th, .modal-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.shopping-list-modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.shopping-list-modal-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.shopping-list-btn-purchase {
+  background-color: #4caf50;
+  color: white;
+}
+
+.shopping-list-btn-edit {
+  background-color: #2196f3;
+  color: white;
+}
+
+.shopping-list-btn-delete {
+  background-color: #f44336;
+  color: white;
+}
+
+.shopping-list-modal-buttons button:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+.shopping-list-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  cursor: pointer;
+  color: #888;
+  transition: color 0.3s;
+}
+
+.shopping-list-close:hover {
+  color: black;
+}
