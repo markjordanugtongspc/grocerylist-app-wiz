@@ -26,7 +26,17 @@ document.addEventListener('DOMContentLoaded', function() {
     hamburger.addEventListener('click', function() {
         sidebar.classList.toggle('active');
     });
+    // Toggle sidebar visibility
+    hamburger.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+    });
 
+    // Close sidebar if clicked outside
+    document.addEventListener('click', function(event) {
+        if (!sidebar.contains(event.target) && !hamburger.contains(event.target)) {
+            sidebar.classList.remove('active');
+        }
+    });
     // Close sidebar if clicked outside
     document.addEventListener('click', function(event) {
         if (!sidebar.contains(event.target) && !hamburger.contains(event.target)) {
@@ -61,6 +71,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    // Load products based on selected category
+    function loadProducts(category) {
+        productList.innerHTML = ''; // Clear existing products
     // Load products based on selected category
     function loadProducts(category) {
         productList.innerHTML = ''; // Clear existing products
@@ -161,10 +174,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (product.isExisting) {
                 listItem.innerHTML = `
+            if (product.isExisting) {
+                listItem.innerHTML = `
                     <span class="product-name">${product.ProductName} - ₱${parseFloat(product.Price).toFixed(2)}</span>
                     <span class="product-quantity">1x</span>
                     <button class="remove-product" title="Remove">×</button>
                 `;
+            } else {
+                listItem.innerHTML = `
             } else {
                 listItem.innerHTML = `
                     <span class="product-name">${product.ProductName} - ₱${parseFloat(product.Price).toFixed(2)} - ${product.Category}</span>
@@ -211,6 +228,13 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        const listData = {
+            id: currentListId,
+            name: listName,
+            dueDate: listDueDate,
+            priority: listPriority,
+            products: selectedProductsData
+        };
         const listData = {
             id: currentListId,
             name: listName,
