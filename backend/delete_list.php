@@ -1,27 +1,39 @@
 <?php
 session_start();
-require_once '../../backend/database/config.php'; // Include database configuration
+require_once 'database/config.php';
 
-// Check if the user is logged in
+header('Content-Type: application/json');
+
 if (!isset($_SESSION['username'])) {
-    echo json_encode(['success' => false, 'error' => 'Not logged in']); // Return error if not logged in
-    exit(); // Stop further execution
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
+    exit();
 }
 
-// Get the JSON input from the request body
-$data = json_decode(file_get_contents('php://input'), true); // Decode JSON input
-$listId = $data['listId']; // Get the list ID from the input
+$listId = intval($_GET['listId']);
 
-// Prepare SQL statement to update the list's LastModified field
-$stmt = $conn->prepare("UPDATE GroceryList SET LastModified = NULL WHERE ListID = ? AND UserID = (SELECT UserID FROM Users WHERE Username = ?)");
-$stmt->bind_param("is", $listId, $_SESSION['username']); // Bind parameters
+try {
+    $conn->begin_transaction();
 
-if ($stmt->execute()) {
-    echo json_encode(['success' => true]); // Return success response
-} else {
-    echo json_encode(['success' => false, 'error' => $conn->error]); // Return error if update fails
+    // Delete from selectedproducts
+    $stmt = $conn->prepare("DELETE FROM selectedproducts WHERE ListID = ?");
+    $stmt->bind_param("i", $listId);
+    $stmt->execute();
+
+    // Delete from grocerylist
+    $stmt = $conn->prepare("DELETE FROM grocerylist WHERE ListID = ? AND UserID = (SELECT UserID FROM Users WHERE Username = ?)");
+    $stmt->bind_param("is", $listId, $_SESSION['username']);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        $conn->commit();
+        echo json_encode(['success' => true, 'message' => 'List deleted successfully']);
+    } else {
+        throw new Exception('No list deleted');
+    }
+} catch (Exception $e) {
+    $conn->rollback();
+    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+} finally {
+    $stmt->close();
+    $conn->close();
 }
-
-$stmt->close(); // Close the statement
-$conn->close(); // Close the database connection
-?>

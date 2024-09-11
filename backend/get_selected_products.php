@@ -16,9 +16,10 @@ $stmt = $conn->prepare("
     SELECT 
         sp.ProductName, 
         sp.Quantity, 
+        sp.IsPurchased,
         COALESCE(gi.Brand, '') AS Brand, 
         COALESCE(gi.WeightVolume, '') AS WeightVolume, 
-        COALESCE(gi.Store, '') AS Store 
+        COALESCE(gi.Store, '') AS Store
     FROM 
         selectedproducts sp
     LEFT JOIN 

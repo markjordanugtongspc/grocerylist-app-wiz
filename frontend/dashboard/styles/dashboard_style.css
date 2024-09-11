@@ -2090,3 +2090,19 @@ span.product-quantity {
 .shopping-list-close:hover {
   color: black;
 }
+/* Add this to your existing CSS */
+
+.purchased td {
+  text-decoration: line-through;
+  color: #888;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.fade-out {
+  animation: fadeOut 0.5s ease-out forwards;
+}
+

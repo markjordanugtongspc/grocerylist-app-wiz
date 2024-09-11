@@ -19,9 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const updatedListModal = document.getElementById('updatedListModal');
     const closeUpdatedListModal = document.getElementById('closeUpdatedListModal');
     const shoppingListModal = document.getElementById('shoppingListModal');
+    const settingsForm = document.getElementById('settingsForm'); // Assuming there's a settings form
+    const editProductImage = document.getElementById('editProductImage');
+    const editProductImageName = document.querySelector('#editProductModal .file-name');
 
     let currentListId; // Track the current list ID
 
+	
     // Toggle sidebar visibility
     hamburger.addEventListener('click', function() {
         sidebar.classList.toggle('active');
@@ -413,7 +417,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showSuccessMessage(message) {
-        showMessage(message, 'success');
+        const popup = document.getElementById('messagePopup');
+        popup.textContent = message;
+        popup.className = 'message-popup success';
+        popup.style.display = 'block';
+        setTimeout(() => {
+            popup.classList.add('fade-out');
+            setTimeout(() => {
+                popup.style.display = 'none';
+                popup.classList.remove('fade-out');
+            }, 500);
+        }, 2500);
     }
 
     function showErrorMessage(message) {
@@ -433,8 +447,6 @@ document.addEventListener('DOMContentLoaded', function() {
         popup.className = `message-popup ${type}`;
         popup.style.display = 'block';
         popup.style.opacity = '1';
-
-        document.body.appendChild(popup);
 
         setTimeout(() => {
             popup.style.opacity = '0';
@@ -467,66 +479,197 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function viewShoppingList(listId) {
-        currentListId = listId;
-        fetch(`../../backend/get_list_details.php?listId=${listId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const list = data.list;
-                    document.getElementById('shoppingListTitle').textContent = list.ListName;
-
-                    // Fetch the products for this shopping list
-                    fetch(`../../backend/get_selected_products.php?listId=${listId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const productTableBody = document.getElementById('shoppingProductTableBody');
-                            productTableBody.innerHTML = '';
-
-                            data.products.forEach(product => {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <td>${product.ProductName}</td>
-                                    <td>${product.Quantity}</td>
-                                `;
-                                productTableBody.appendChild(row);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Error fetching products:', error);
-                        });
-
-                    shoppingListModal.style.display = 'block';
-                } else {
+		currentListId = listId;
+		fetch(`../../backend/get_list_details.php?listId=${listId}`)
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					const list = data.list;
+					document.getElementById('shoppingListTitle').textContent = list.ListName;
+	
+					// Fetch the products for this shopping list
+					fetch(`../../backend/get_selected_products.php?listId=${listId}`)
+						.then(response => response.json())
+						.then(data => {
+							const productTableBody = document.getElementById('shoppingProductTableBody');
+							productTableBody.innerHTML = '';
+	
+							data.products.forEach(product => {
+								const row = document.createElement('tr');
+								if (product.IsPurchased == 1) {
+									row.classList.add('purchased');
+								}
+								row.innerHTML = `
+									<td>${product.ProductName}</td>
+									<td>${product.Brand}</td>
+									<td>${product.WeightVolume}</td>
+									<td>${product.Store}</td>
+									<td>${product.Quantity}</td>
+								`;
+								productTableBody.appendChild(row);
+							});
+						})
+						.catch(error => {
+							console.error('Error fetching products:', error);
+						});
+	
+					shoppingListModal.style.display = 'block';
+				} else {
 					showErrorMessage('Error fetching list details: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showErrorMessage('An unexpected error occurred. Please try again.');
-            });
-    }
-
-    // Attach event listeners to the buttons in the shopping list modal
-    document.querySelector('.shopping-list-btn-edit').addEventListener('click', function() {
-        fetch(`../../backend/get_list_details.php?listId=${currentListId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const list = data.list;
-                    document.getElementById('listName').value = list.ListName;
-                    const dueDate = new Date(list.DueDate);
-                    const formattedDate = dueDate.toISOString().split('T')[0];
-                    document.getElementById('listDueDate').value = formattedDate;
-                    document.getElementById('listPriority').value = list.Priority.toLowerCase();
-                    listModal.style.display = 'block';
-                    shoppingListModal.style.display = 'none';
-                } else {
-                    showErrorMessage('Error fetching list details: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showErrorMessage('An unexpected error occurred. Please try again.');
-            });
-    });
+				}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				showErrorMessage('An unexpected error occurred. Please try again.');
+			});
+	}
+	
+	// Attach event listeners to the buttons in the shopping list modal
+	document.querySelector('.shopping-list-btn-edit').addEventListener('click', function() {
+		fetch(`../../backend/get_list_details.php?listId=${currentListId}`)
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					const list = data.list;
+					document.getElementById('listName').value = list.ListName;
+					const dueDate = new Date(list.DueDate);
+					const formattedDate = dueDate.toISOString().split('T')[0];
+					document.getElementById('listDueDate').value = formattedDate;
+					document.getElementById('listPriority').value = list.Priority.toLowerCase();
+					listModal.style.display = 'block';
+					shoppingListModal.style.display = 'none';
+				} else {
+					showErrorMessage('Error fetching list details: ' + data.error);
+				}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				showErrorMessage('An unexpected error occurred. Please try again.');
+			});
+	});
+	
+	// Make these functions globally accessible
+	window.showSuccessMessage = showSuccessMessage;
+	window.showErrorMessage = showErrorMessage;
+	
+	const editProductsBtn = document.getElementById('editProductsBtn');
+	const editProductModal = document.getElementById('editProductModal');
+	const editProductForm = document.getElementById('editProductForm');
+	const editProductCloseBtn = editProductModal.querySelector('.close');
+	const selectProductToEdit = document.getElementById('selectProductToEdit');
+	
+	function populateEditForm(product) {
+		document.getElementById('editProductName').value = product.ProductName;
+		document.getElementById('editBrand').value = product.Brand;
+		document.getElementById('editPrice').value = product.Price;
+		document.getElementById('editWeightVolume').value = product.WeightVolume;
+		document.getElementById('editQuantity').value = product.Quantity;
+		document.getElementById('editStore').value = product.Store;
+		document.getElementById('editCategory').value = product.Category;
+	}
+	
+	editProductForm.addEventListener('submit', function(e) {
+		e.preventDefault();
+		const formData = new FormData(this);
+		formData.append('oldProductName', selectProductToEdit.value);
+		const category = document.getElementById('editCategory').value.toLowerCase();
+		
+		// Append category to formData for server processing
+		formData.append('categoryPath', `../../images/products/${category}/`);
+	
+		fetch('../../backend/update_product.php', {
+			method: 'POST',
+			body: formData
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
+				showSuccessMessage('Product updated successfully');
+				editProductModal.style.display = 'none';
+				// Refresh the product list or update the UI as needed
+				loadProducts(document.getElementById('currentCategory').value || 'Fruits'); // Assuming you have a way to get the current category
+			} else {
+				showErrorMessage('Error updating product: ' + (data.error || 'Unknown error'));
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+			showErrorMessage('An unexpected error occurred. Please try again.');
+		});
+	});
+	
+	// Open edit product modal
+	editProductsBtn.addEventListener('click', function() {
+		editProductModal.style.display = 'block';
+		loadProductNames();
+		loadStores();
+	});
+	
+	// Close edit product modal
+	editProductCloseBtn.addEventListener('click', function() {
+		editProductModal.style.display = 'none';
+	});    
+	
+	// Load product names for dropdown
+	function loadProductNames() {
+		fetch('../../backend/get_product_names.php')
+			.then(response => response.json())
+			.then(data => {
+				const datalist = document.getElementById('productNameList');
+				datalist.innerHTML = '';
+				data.forEach(product => {
+					const option = document.createElement('option');
+					option.value = product.ProductName;
+					datalist.appendChild(option);
+				});
+			})
+			.catch(error => console.error('Error:', error));
+	}
+	
+	// Load stores for dropdown
+	function loadStores() {
+		fetch('../../backend/get_stores.php')
+			.then(response => response.json())
+			.then(data => {
+				const datalist = document.getElementById('storeList');
+				datalist.innerHTML = '';
+				data.forEach(store => {
+					const option = document.createElement('option');
+					option.value = store;
+					datalist.appendChild(option);
+				});
+			})
+			.catch(error => console.error('Error:', error));
+	}
+	
+	// Load product details when a product is selected
+	selectProductToEdit.addEventListener('change', function() {
+		const selectedProduct = this.value;
+		if (selectedProduct) {
+			loadProductDetails(selectedProduct);
+		}
+	});
+	
+	// Load product details
+	function loadProductDetails(productName) {
+		fetch(`../../backend/get_product_details.php?productName=${encodeURIComponent(productName)}`)
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					populateEditForm(data.product);
+				}
+			})
+			.catch(error => console.error('Error:', error));
+	}
+	
+	// Update the file name display when a file is selected
+	if (editProductImage && editProductImageName) {
+		editProductImage.addEventListener('change', function() {
+			if (this.files && this.files.length > 0) {
+				editProductImageName.textContent = this.files[0].name;
+			} else {
+				editProductImageName.textContent = 'No file chosen';
+			}
+		});
+	}
 });
