@@ -1,62 +1,85 @@
 <?php
-session_start();
-require_once 'database/config.php'; // Include database configuration
+// Turn off error reporting for production
+error_reporting(0);
+ini_set('display_errors', 0);
 
-header('Content-Type: application/json'); // Set response type to JSON
+// Start output buffering
+ob_start();
+
+session_start();
+require_once 'database/config.php';
+
+// Set the content type to JSON
+header('Content-Type: application/json');
+
+// Function to return JSON response
+function sendJsonResponse($success, $message = '', $data = null) {
+    $response = [
+        'success' => $success,
+        'message' => $message,
+        'data' => $data
+    ];
+    echo json_encode($response);
+    ob_end_flush();
+    exit;
+}
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
-    echo json_encode(['success' => false, 'error' => 'Not logged in']); // Return error if not logged in
-    exit(); // Stop further execution
+    sendJsonResponse(false, 'Not logged in');
 }
 
-// Decode the JSON input from the request body
+// Decode the JSON input
 $input = json_decode(file_get_contents('php://input'), true);
 
-// Ensure all required fields are provided
+// Validate input
 if (!isset($input['id']) || !isset($input['name']) || !isset($input['dueDate']) || !isset($input['priority']) || !isset($input['products'])) {
-    echo json_encode(['success' => false, 'error' => 'Missing required fields']); // Return error if fields are missing
-    exit(); // Stop further execution
+    sendJsonResponse(false, 'Missing required fields');
 }
 
-// Extract data from the input
+// Extract data
 $listId = $input['id'];
 $listName = $input['name'];
 $dueDate = $input['dueDate'];
 $priority = $input['priority'];
 $products = $input['products'];
 
-// Convert the due date to MySQL datetime format
-$formattedDueDate = date('Y-m-d H:i:s', strtotime($dueDate));
-
-$conn->begin_transaction(); // Start a database transaction
+// Validate data types and formats here if needed
 
 try {
-    // Update the list details in the database
+    $conn->begin_transaction();
+
+    // Update list details
     $stmt = $conn->prepare("UPDATE grocerylist SET ListName = ?, DueDate = ?, Priority = ?, LastModified = NOW() WHERE ListID = ? AND UserID = (SELECT UserID FROM Users WHERE Username = ?)");
-    $stmt->bind_param("sssss", $listName, $formattedDueDate, $priority, $listId, $_SESSION['username']);
+    $stmt->bind_param("sssss", $listName, $dueDate, $priority, $listId, $_SESSION['username']);
     $stmt->execute();
 
-    // Delete existing products for this list
+    if ($stmt->affected_rows === 0) {
+        throw new Exception("No list updated. Check if the list exists and belongs to the current user.");
+    }
+
+    // Delete existing products
     $stmt = $conn->prepare("DELETE FROM selectedproducts WHERE ListID = ?");
     $stmt->bind_param("i", $listId);
     $stmt->execute();
 
-    // Insert new products into the database
+    // Insert new products
     $stmt = $conn->prepare("INSERT INTO selectedproducts (ListID, ProductName, Quantity) VALUES (?, ?, ?)");
     foreach ($products as $product) {
-        $productName = $product['name']; // Get product name
-        $quantity = $product['quantity']; // Get product quantity
-        $stmt->bind_param("isi", $listId, $productName, $quantity); // Bind parameters
-        $stmt->execute(); // Execute insert for each product
+        $stmt->bind_param("isi", $listId, $product['name'], $product['quantity']);
+        if (!$stmt->execute()) {
+            throw new Exception("Error inserting product: " . $stmt->error);
+        }
     }
 
-    $conn->commit(); // Commit the transaction
-    echo json_encode(['success' => true]); // Return success response
+    $conn->commit();
+    sendJsonResponse(true, 'List updated successfully');
 } catch (Exception $e) {
-    $conn->rollback(); // Rollback the transaction on error
-    echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]); // Return error response
+    $conn->rollback();
+    sendJsonResponse(false, 'Database error: ' . $e->getMessage());
+} finally {
+    if (isset($stmt)) {
+        $stmt->close();
+    }
+    $conn->close();
 }
-
-$stmt->close(); // Close the statement
-$conn->close(); // Close the database connection
