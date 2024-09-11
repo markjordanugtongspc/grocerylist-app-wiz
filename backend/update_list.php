@@ -32,6 +32,28 @@ if (!isset($_SESSION['username'])) {
 // Decode the JSON input
 $input = json_decode(file_get_contents('php://input'), true);
 
+// Check if this is a "mark as purchased" request
+if (isset($input['action']) && $input['action'] === 'markPurchased') {
+    $listId = intval($input['listId']);
+
+    try {
+        $stmt = $conn->prepare("UPDATE selectedproducts SET IsPurchased = 1 WHERE ListID = ?");
+        $stmt->bind_param("i", $listId);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            sendJsonResponse(true, 'Products marked as purchased');
+        } else {
+            sendJsonResponse(false, 'No products updated');
+        }
+    } catch (Exception $e) {
+        sendJsonResponse(false, 'Database error: ' . $e->getMessage());
+    } finally {
+        if (isset($stmt)) $stmt->close();
+    }
+    exit();
+}
+
 // Validate input
 if (!isset($input['id']) || !isset($input['name']) || !isset($input['dueDate']) || !isset($input['priority']) || !isset($input['products'])) {
     sendJsonResponse(false, 'Missing required fields');

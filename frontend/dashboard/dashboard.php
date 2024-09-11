@@ -81,6 +81,7 @@ $conn->close(); // Close the database connection
                 <!-- Sidebar navigation buttons -->
                 <button class="sidebar-btn"><i class="fas fa-home"></i> Home</button>
                 <button class="sidebar-btn" id="addProductsBtn"><i class="fas fa-list"></i> Add Products</button>
+                <button class="sidebar-btn" id="editProductsBtn"><i class="fas fa-edit"></i> Edit Products</button>
                 <button class="sidebar-btn"><i class="fas fa-history"></i> History</button>
                 <button class="sidebar-btn"><i class="fas fa-star"></i> Favorites</button>
                 <button class="sidebar-btn"><i class="fas fa-bell"></i> Notifications</button>
@@ -234,6 +235,59 @@ $conn->close(); // Close the database connection
                 </div>
             </div>
             <button type="submit" class="btn-submit">Add Product</button> <!-- Button to submit new product -->
+        </form>
+    </div>
+</div>
+
+<!-- Modal for Editing a Product -->
+<div id="editProductModal" class="modal">
+    <div class="modal-content add-product-modal">
+        <span class="close">&times;</span>
+        <h2>Edit Product</h2>
+        <form id="editProductForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="selectProductToEdit">Select Product to Edit</label>
+                <input type="text" id="selectProductToEdit" name="selectProductToEdit" required class="form-control" list="productNameList">
+                <datalist id="productNameList"></datalist>
+            </div>
+            <div class="form-group">
+                <label for="editProductName">New Product Name</label>
+                <input type="text" id="editProductName" name="productName" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="editBrand">Brand</label>
+                <input type="text" id="editBrand" name="brand" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="editPrice">Price</label>
+                <input type="number" id="editPrice" name="price" step="0.01" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="editWeightVolume">Weight/Volume</label>
+                <input type="text" id="editWeightVolume" name="weightVolume" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="editQuantity">Quantity</label>
+                <input type="number" id="editQuantity" name="quantity" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="editStore">Store</label>
+                <input type="text" id="editStore" name="store" class="form-control" list="storeList">
+                <datalist id="storeList"></datalist>
+            </div>
+            <div class="form-group">
+                <label for="editCategory">Category</label>
+                <select id="editCategory" name="category" required class="form-control">
+                    <option value="Fruits">Fruits</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editProductImage">Product Image</label>
+                <input type="file" id="editProductImage" name="productImage" class="form-control">
+                <span class="file-name">No file chosen</span>
+            </div>
         </form>
     </div>
 </div>
