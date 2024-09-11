@@ -33,6 +33,16 @@ $stmt->execute();
 $result = $stmt->get_result();
 $lists = $result->fetch_all(MYSQLI_ASSOC); // Fetch all lists associated with the user
 $stmt->close(); // Close the statement
+
+// Check for lists with LastModified not null
+$modifiedList = null;
+foreach ($lists as $list) {
+    if (!is_null($list['LastModified'])) {
+        $modifiedList = $list;
+        break; // Exit loop on first found modified list
+    }
+}
+
 $conn->close(); // Close the database connection
 ?>
 
@@ -43,7 +53,6 @@ $conn->close(); // Close the database connection
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="styles/dashboard_style.css" />
     <link rel="icon" href="../../images/grocery.ico" type="image/x-icon">
@@ -93,7 +102,7 @@ $conn->close(); // Close the database connection
                         <div class="list-container">
                             <?php foreach ($lists as $list): ?>
                                 <!-- List item that is clickable to view details -->
-                                <div class="list-item clickable" data-id="<?php echo $list['ListID']; ?>" onclick="viewList(<?php echo $list['ListID']; ?>)">
+                                <div class="list-item clickable" data-id="<?php echo $list['ListID']; ?>" onclick="handleListClick(<?php echo $list['ListID']; ?>)">
                                     <h3><?php echo htmlspecialchars($list['ListName']); ?></h3> <!-- Display list name -->
                                     <p>Due: <?php echo $list['DueDate']; ?></p> <!-- Display due date -->
                                     <p class="priority">
@@ -112,176 +121,159 @@ $conn->close(); // Close the database connection
             </div>
         </div>
 
-        <!-- Modal for profile settings -->
-        <div id="settingsModal" class="modal">
-            <div class="modal-content settings-modal">
-                <span class="close">&times;</span> <!-- Close button -->
-                <h2>Profile Settings</h2>
-                <form id="settingsForm" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="newUsername">New Username</label>
-                        <input type="text" id="newUsername" name="newUsername" required class="form-control" placeholder="Enter new username">
-                    </div>
-                    <div class="form-group">
-                        <label for="newAvatar">New Avatar</label>
-                        <div class="file-input-wrapper">
-                            <input type="file" id="newAvatar" name="newAvatar" accept="image/*" class="file-input">
-                            <label for="newAvatar" class="file-input-label">
-                                <i class="fas fa-cloud-upload-alt"></i> Choose File
-                            </label>
-                            <span class="file-name">No file chosen</span>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-submit">Save Changes</button>
-                </form>
+<!-- Modal for Profile Settings -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content settings-modal">
+        <span class="close">&times;</span> <!-- Close button -->
+        <h2>Profile Settings</h2>
+        <form id="settingsForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="newUsername">New Username</label>
+                <input type="text" id="newUsername" name="newUsername" required class="form-control" placeholder="Enter new username">
             </div>
-        </div>
-
-        <script src="scripts/dashboard_script.js"></script>
-
-        <!-- Modal for editing a grocery list -->
-        <div id="listModal" class="modal">
-            <div class="modal-content list-edit-modal">
-                <span class="close">&times;</span> <!-- Close button -->
-                <h2 id="modalTitle">Edit List</h2>
-                <div class="list-edit-container">
-                    <div class="list-details">
-                        <input type="text" id="listName" placeholder="List Name"> <!-- Input for list name -->
-                        <input type="date" id="listDueDate"> <!-- Input for due date -->
-                        <select id="listPriority"> <!-- Dropdown for priority selection -->
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                        </select>
-                    </div>
-                    <div class="product-categories">
-                        <!-- Category buttons for product selection -->
-                        <button class="category-btn active" data-category="Fruits">Fruits</button>
-                        <button class="category-btn" data-category="Vegetables">Vegetables</button>
-                        <button class="category-btn" data-category="Other">Other</button>
-                    </div>
-                    <div class="sort-filter-container">
-                        <select id="sortDropdown">
-                            <option value="">Sort by...</option>
-                            <option value="priceLowHigh">Price: Low to High</option>
-                            <option value="priceHighLow">Price: High to Low</option>
-                            <option value="nameAZ">Name: A to Z</option>
-                            <option value="nameZA">Name: Z to A</option>
-                        </select>
-                    </div>
-                    <div id="productList" class="product-list"></div> <!-- Display area for products -->
-                    <div id="selectedProducts" class="selected-products">
-                        <h3>Selected Products</h3>
-                    </div>
+            <div class="form-group">
+                <label for="newAvatar">New Avatar</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="newAvatar" name="newAvatar" accept="image/*" class="file-input">
+                    <label for="newAvatar" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Choose File
+                    </label>
+                    <span class="file-name">No file chosen</span>
                 </div>
-                <button id="saveListBtn">Save List</button> <!-- Button to save the edited list -->
             </div>
-        </div>
-
-        <!-- Modal for viewing list details -->
-        <div id="viewListModal" class="modal">
-            <div class="modal-content view-list-modal">
-                <span class="close">&times;</span> <!-- Close button -->
-                <h2 id="viewListTitle"></h2>
-                <p id="viewListDueDate"></p>
-                <p id="viewListPriority"></p>
-                <h3>Selected Products:</h3>
-                <ul id="viewListProducts"></ul> <!-- List of selected products -->
-                <button id="editProductsBtn">Edit Products</button> <!-- Button to edit products -->
-                <button id="deleteListBtn">Delete List</button> <!-- Button to delete the list -->
-            </div>
-        </div>
-
+            <button type="submit" class="btn-submit">Save Changes</button>
+        </form>
     </div>
+</div>
 
-    <!-- Modal for adding a new product -->
-    <div id="addProductModal" class="modal">
-        <div class="modal-content add-product-modal">
-            <span class="close">&times;</span> <!-- Close button -->
-            <h2>Add New Product</h2>
-            <form id="addProductForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="productName">Product Name</label>
-                    <input type="text" id="productName" name="productName" required class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="productBrand">Brand</label>
-                    <input type="text" id="productBrand" name="productBrand" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="productPrice">Price</label>
-                    <input type="number" id="productPrice" name="productPrice" step="0.01" required class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="productWeightVolume">Weight/Volume</label>
-                    <input type="text" id="productWeightVolume" name="productWeightVolume" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="productQuantity">Quantity</label>
-                    <input type="number" id="productQuantity" name="productQuantity" required class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="productStore">Store</label>
-                    <input type="text" id="productStore" name="productStore" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="productCategory">Category</label>
-                    <select id="productCategory" name="productCategory" required class="form-control">
-                        <option value="Fruits">Fruits</option>
-                        <option value="Vegetables">Vegetables</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="productImage">Product Image</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="productImage" name="productImage" accept="image/*" class="file-input">
-                        <label for="productImage" class="file-input-label">
-                            <i class="fas fa-cloud-upload-alt"></i> Choose File
-                        </label>
-                        <span class="file-name">No file chosen</span>
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit">Add Product</button> <!-- Button to submit new product -->
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal for editing a specific list -->
-    <div id="editListModal" class="modal">
-        <div class="modal-content edit-list-modal">
-            <span class="close">&times;</span> <!-- Close button -->
-            <h2 id="editListTitle">Edit List: <span id="listName"></span></h2> <!-- Title showing the list name -->
-            <div class="category-buttons">
-                <button class="category-btn" data-category="Fruits">Fruits</button>
+<!-- Modal for Editing a Grocery List -->
+<div id="listModal" class="modal">
+    <div class="modal-content list-edit-modal">
+        <span class="close">&times;</span> <!-- Close button -->
+        <h2 id="modalTitle">Edit List</h2>
+        <div class="list-edit-container">
+            <div class="list-details">
+                <input type="text" id="listName" placeholder="List Name"> <!-- Input for list name -->
+                <input type="date" id="listDueDate"> <!-- Input for due date -->
+                <select id="listPriority"> <!-- Dropdown for priority selection -->
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div class="product-categories">
+                <!-- Category buttons for product selection -->
+                <button class="category-btn active" data-category="Fruits">Fruits</button>
                 <button class="category-btn" data-category="Vegetables">Vegetables</button>
                 <button class="category-btn" data-category="Other">Other</button>
             </div>
-            <div id="productList"></div> <!-- Display area for products -->
-            <div id="selectedProducts"></div> <!-- Area showing selected products -->
-            <button id="saveListBtn">Save List</button> <!-- Button to save the edited list -->
+            <div class="sort-filter-container">
+                <select id="sortDropdown">
+                    <option value="">Sort by...</option>
+                    <option value="priceLowHigh">Price: Low to High</option>
+                    <option value="priceHighLow">Price: High to Low</option>
+                    <option value="nameAZ">Name: A to Z</option>
+                    <option value="nameZA">Name: Z to A</option>
+                </select>
+            </div>
+            <div id="productList" class="product-list"></div> <!-- Display area for products -->
+            <div id="selectedProducts" class="selected-products">
+                <h3>Selected Products</h3>
+            </div>
+        </div>
+        <button id="saveListBtn">Save List</button> <!-- Button to save the edited list -->
+    </div>
+</div>
+
+<!-- Modal for Adding a New Product -->
+<div id="addProductModal" class="modal">
+    <div class="modal-content add-product-modal">
+        <span class="close">&times;</span> <!-- Close button -->
+        <h2>Add New Product</h2>
+        <form id="addProductForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input type="text" id="productName" name="productName" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productBrand">Brand</label>
+                <input type="text" id="productBrand" name="productBrand" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productPrice">Price</label>
+                <input type="number" id="productPrice" name="productPrice" step="0.01" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productWeightVolume">Weight/Volume</label>
+                <input type="text" id="productWeightVolume" name="productWeightVolume" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productQuantity">Quantity</label>
+                <input type="number" id="productQuantity" name="productQuantity" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productStore">Store</label>
+                <input type="text" id="productStore" name="productStore" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="productCategory">Category</label>
+                <select id="productCategory" name="productCategory" required class="form-control">
+                    <option value="Fruits">Fruits</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="productImage">Product Image</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="productImage" name="productImage" accept="image/*" class="file-input">
+                    <label for="productImage" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Choose File
+                    </label>
+                    <span class="file-name">No file chosen</span>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Add Product</button> <!-- Button to submit new product -->
+        </form>
+    </div>
+</div>
+
+<!-- Modal for Confirming that the Grocery List has been Updated -->
+<div id="updatedListModal" class="modal">
+    <div class="modal-content updated-list-modal">
+        <span class="close">&times;</span> <!-- Close button -->
+        <h2>Grocery List Updated</h2>
+        <p>Your grocery list has been successfully updated.</p>
+        <button id="closeUpdatedListModal">Close</button> <!-- Button to close the modal -->
+    </div>
+</div>
+
+<!-- Shopping List Modal -->
+<div id="shoppingListModal" class="shopping-list-modal">
+    <div class="shopping-list-modal-content">
+        <span class="shopping-list-close" onclick="closeShoppingListModal()">&times;</span>
+        <h2 id="shoppingListTitle" class="modal-title"></h2>
+        <h3 class="modal-subtitle">Shopping List</h3>
+        <table id="shoppingProductTable" class="modal-table">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody id="shoppingProductTableBody">
+                <!-- Products will be populated here -->
+            </tbody>
+        </table>
+        <div class="shopping-list-modal-buttons">
+            <button class="shopping-list-btn-purchase">Purchased</button>
+            <button class="shopping-list-btn-edit">Edit List</button>
+            <button class="shopping-list-btn-delete">Delete List</button>
         </div>
     </div>
+</div>
 
-    <!-- Modal for confirming that the grocery list has been updated -->
-    <div id="updatedListModal" class="modal">
-        <div class="modal-content updated-list-modal">
-            <span class="close">&times;</span> <!-- Close button -->
-            <h2>Grocery List Updated</h2>
-            <p>Your grocery list has been successfully updated.</p>
-            <button id="closeUpdatedListModal">Close</button> <!-- Button to close the modal -->
-        </div>
-    </div>
-
-    <div id="selectedProductsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeSelectedProductsModal()">&times;</span> <!-- Close button -->
-            <h2>Selected Products</h2>
-            <ul id="selectedProductsList"></ul> <!-- Display list of selected products -->
-        </div>
-    </div>
-
-    <script src="scripts/dashboard_script.js"></script>
+<script src="scripts/dashboard_script.js"></script>
+<script src="scripts/shop_dashboard_modal_script.js"></script>
 </body>
-
 </html>
