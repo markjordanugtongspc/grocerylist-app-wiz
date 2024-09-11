@@ -325,6 +325,10 @@ $conn->close(); // Close the database connection
                 <!-- Products will be populated here -->
             </tbody>
         </table>
+        <!-- Add this just before the closing </div> of the shopping-list-modal-content -->
+        <div class="shopping-list-total">
+            <strong>Total:</strong> <span id="shoppingListTotal">₱0.00</span>
+        </div>
         <div class="shopping-list-modal-buttons">
             <button class="shopping-list-btn-purchase">Purchased</button>
             <button class="shopping-list-btn-edit">Edit List</button>

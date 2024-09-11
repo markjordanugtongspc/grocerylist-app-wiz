@@ -25,6 +25,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let currentListId; // Track the current list ID
 
+    function updateShoppingListTotal() {
+        let total = 0;
+        const rows = document.querySelectorAll('#shoppingProductTableBody tr');
+        rows.forEach(row => {
+            const priceCell = row.querySelector('td[data-price]');
+            const quantityCell = row.querySelector('td:last-child');
+            if (priceCell && quantityCell) {
+                const price = parseFloat(priceCell.dataset.price);
+                const quantity = parseInt(quantityCell.textContent);
+                total += price * quantity;
+            }
+        });
+        document.getElementById('shoppingListTotal').textContent = `₱${total.toFixed(2)}`;
+    }
 	
     // Toggle sidebar visibility
     hamburger.addEventListener('click', function() {
