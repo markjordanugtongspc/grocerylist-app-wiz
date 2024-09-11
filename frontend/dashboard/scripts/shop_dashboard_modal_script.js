@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 const row = document.createElement('tr');
                                 row.innerHTML = `
                                     <td>${product.ProductName}</td>
+                                    <td>${product.Brand}</td>
+                                    <td>${product.WeightVolume}</td>
+                                    <td>${product.Store}</td>
                                     <td>${product.Quantity}</td>
                                 `;
                                 productTableBody.appendChild(row);
