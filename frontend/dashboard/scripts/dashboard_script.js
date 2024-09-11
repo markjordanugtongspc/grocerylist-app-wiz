@@ -573,10 +573,29 @@ document.addEventListener('DOMContentLoaded', function() {
 		const formData = new FormData(this);
 		formData.append('oldProductName', selectProductToEdit.value);
 		const category = document.getElementById('editCategory').value.toLowerCase();
-		
+	
 		// Append category to formData for server processing
 		formData.append('categoryPath', `../../images/products/${category}/`);
 	
+		// Handle image change
+		const updatedProductImage = document.getElementById('editProductImage').files[0];
+		if (updatedProductImage) {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				const imageBase64 = reader.result;
+				formData.append('updatedProductImage', imageBase64);
+	
+				// Proceed with existing fetch call after reading the image
+				updateProduct(formData);
+			};
+			reader.readAsDataURL(updatedProductImage);
+		} else {
+			// If no image is provided, proceed without image data
+			updateProduct(formData);
+		}
+	});
+	
+	function updateProduct(formData) {
 		fetch('../../backend/update_product.php', {
 			method: 'POST',
 			body: formData
@@ -596,7 +615,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			console.error('Error:', error);
 			showErrorMessage('An unexpected error occurred. Please try again.');
 		});
-	});
+	}
 	
 	// Open edit product modal
 	editProductsBtn.addEventListener('click', function() {
