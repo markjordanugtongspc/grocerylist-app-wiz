@@ -1,82 +1,77 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const backArrow = document.querySelector('.back-arrow'); // Select back arrow element
-    const addListForm = document.getElementById('addListForm'); // Select the add list form
-    const clearButton = document.querySelector('.btn-secondary'); // Select clear button
-    const priorityRadios = document.querySelectorAll('input[name="priority"]'); // Select priority radio buttons
-    const successPopup = document.getElementById('successPopup'); // Select success popup element
-    
-    // Navigate back to the dashboard when back arrow is clicked
+    const backArrow = document.querySelector('.back-arrow');
+    const addListForm = document.getElementById('addListForm');
+    const clearButton = document.querySelector('.btn-secondary');
+    const priorityRadios = document.querySelectorAll('input[name="priority"]');
+    const successPopup = document.getElementById('successPopup');
+
+    // Set default date to "September 06, 2024"
+    const dueDateInput = document.getElementById('due-date');
+    dueDateInput.value = '2024-09-06'; // Set the value to match the format expected by the input
+
     backArrow.addEventListener('click', function(e) {
-        e.preventDefault(); // Prevent default anchor behavior
-        window.location.href = 'dashboard.php'; // Redirect to dashboard
+        e.preventDefault();
+        window.location.href = 'dashboard.php';
     });
 
-    // Function to clear the form inputs
     function clearForm() {
-        document.getElementById('list-name').value = ''; // Clear list name input
-        document.getElementById('due-date').value = ''; // Clear due date input
+        document.getElementById('list-name').value = '';
+        dueDateInput.value = '2024-09-06'; // Reset to default date
         priorityRadios.forEach(radio => {
-            radio.checked = false; // Uncheck all priority radios
-            radio.parentElement.classList.remove('active'); // Remove active class for styling
+            radio.checked = false;
+            radio.parentElement.classList.remove('active');
         });
-        document.querySelector('input[name="default"]').checked = false; // Uncheck default checkbox
+        document.querySelector('input[name="default"]').checked = false;
     }
 
-    // Clear the form when the clear button is clicked
     clearButton.addEventListener('click', function(e) {
-        e.preventDefault(); // Prevent default button behavior
-        clearForm(); // Call clearForm function
+        e.preventDefault();
+        clearForm();
     });
 
-    // Add event listeners for priority radio buttons to show active state
     priorityRadios.forEach(radio => {
         radio.addEventListener('change', function() {
-            priorityRadios.forEach(r => r.parentElement.classList.remove('active')); // Reset active state
+            priorityRadios.forEach(r => r.parentElement.classList.remove('active'));
             if (this.checked) {
-                this.parentElement.classList.add('active'); // Set the active class for checked radio
+                this.parentElement.classList.add('active');
             }
         });
     });
 
-    // Handle form submission
     addListForm.addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevent the default form submission behavior
-        
-        // Send form data to the server via fetch
+        e.preventDefault();
         fetch(addListForm.action, {
             method: 'POST',
-            body: new FormData(addListForm) // Prepare form data to be sent
+            body: new FormData(addListForm)
         })
-        .then(response => response.json()) // Parse the JSON response
+        .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showSuccessMessage(data.message); // Show success message
-                clearForm(); // Clear the form after successful submission
+                showSuccessMessage(data.message);
+                clearForm();
             } else {
-                console.error(data.error); // Log error to console
-                alert('Error: ' + data.error); // Show error message to user
+                console.error(data.error);
+                alert('Error: ' + data.error);
             }
         })
         .catch(error => {
-            console.error('Error:', error); // Log any unexpected errors
-            alert('An unexpected error occurred. Please try again.'); // Show generic error message
+            console.error('Error:', error);
+            alert('An unexpected error occurred. Please try again.');
         });
     });
 
-    // Function to display success message
     function showSuccessMessage(message) {
-        const successMessageElement = document.getElementById('successMessage'); // Select success message element
-        successMessageElement.textContent = message; // Set the message text
-        successPopup.style.display = 'block'; // Show the success popup
+        const successMessageElement = document.getElementById('successMessage');
+        successMessageElement.textContent = message;
+        successPopup.style.display = 'block';
         
-        // Set a timeout to hide the popup and redirect to dashboard after 3 seconds
         setTimeout(() => {
-            successPopup.style.opacity = '0'; // Start fade-out effect
+            successPopup.style.opacity = '0';
             setTimeout(() => {
-                successPopup.style.display = 'none'; // Hide popup after fade-out
-                successPopup.style.opacity = '1'; // Reset opacity for next use
-                window.location.href = 'dashboard.php'; // Redirect to dashboard
-            }, 300); // Short delay for fade-out effect
-        }, 3000); // 3 seconds delay
+                successPopup.style.display = 'none';
+                successPopup.style.opacity = '1';
+                window.location.href = 'dashboard.php';
+            }, 300);
+        }, 3000);
     }
 });

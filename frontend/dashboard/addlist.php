@@ -78,7 +78,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // Check if the form is submitted
             <div class="header">
                 <a href="dashboard.php" class="back-arrow"><i class="fas fa-arrow-left"></i></a> <!-- Back to dashboard link -->
                 <h1>Create New List</h1> <!-- Page title -->
-                <a href="#" class="search-icon"><i class="fas fa-search"></i></a> <!-- Placeholder for search functionality -->
             </div>
             <div class="content">
                 <form id="addListForm" method="POST" action=""> <!-- Form for adding a new list -->

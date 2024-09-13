@@ -310,7 +310,15 @@ $conn->close(); // Close the database connection
     <div class="shopping-list-modal-content">
         <span class="shopping-list-close" onclick="closeShoppingListModal()">&times;</span>
         <h2 id="shoppingListTitle" class="modal-title"></h2>
-        <h3 class="modal-subtitle">Shopping List</h3>
+        <!-- Flex container for subtitle and search icon -->
+        <div class="modal-header">
+            <h3 class="modal-subtitle">Shopping List</h3>
+            <a href="#" class="search-icon" onclick="toggleSearchBar()"><i class="fas fa-search"></i></a>
+        </div>
+        
+        <!-- Search bar to be toggled -->
+        <input type="text" id="searchBar" class="search-bar" placeholder="Search by Product Name" onkeyup="searchProduct()" style="display: none;">
+
         <table id="shoppingProductTable" class="modal-table">
             <thead>
                 <tr>
@@ -325,7 +333,6 @@ $conn->close(); // Close the database connection
                 <!-- Products will be populated here -->
             </tbody>
         </table>
-        <!-- Add this just before the closing </div> of the shopping-list-modal-content -->
         <div class="shopping-list-total">
             <strong>Total:</strong> <span id="shoppingListTotal">₱0.00</span>
         </div>
