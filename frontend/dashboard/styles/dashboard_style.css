@@ -2175,6 +2175,35 @@ span.product-quantity {
   color: #4CAF50;
 }
 
+/* Search Bar on Shopping List */
+.search-bar {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* Flex container for header */
+.modal-header {
+  display: flex;
+  justify-content: space-between; /* Space between subtitle and search icon */
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.search-icon {
+  color: #333;
+  font-size: 20px;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.search-icon:hover {
+  color: #f37979; /* Optional: hover color */
+}
+
 @media (max-width: 768px) {
   .modal-title {
     font-size: 1.3em;

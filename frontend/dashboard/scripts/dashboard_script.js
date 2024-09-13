@@ -706,3 +706,40 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	}
 });
+
+// Function to toggle the visibility of the search bar
+function toggleSearchBar() {
+    const searchBar = document.getElementById('searchBar');
+    searchBar.style.display = searchBar.style.display === 'none' ? 'block' : 'none';
+}
+
+// Function to filter products in the shopping list modal by product name
+function searchProduct() {
+    const input = document.getElementById('searchBar');
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('shoppingProductTableBody');
+    const trs = table.getElementsByTagName('tr');
+
+    for (let i = 0; i < trs.length; i++) {
+        const tdName = trs[i].getElementsByTagName('td')[0]; // Product Name
+        const tdBrand = trs[i].getElementsByTagName('td')[1]; // Brand
+        const tdStore = trs[i].getElementsByTagName('td')[3]; // Store
+
+        if (tdName || tdBrand || tdStore) {
+            const nameValue = tdName ? tdName.textContent || tdName.innerText : '';
+            const brandValue = tdBrand ? tdBrand.textContent || tdBrand.innerText : '';
+            const storeValue = tdStore ? tdStore.textContent || tdStore.innerText : '';
+
+            // Check if any of the fields contain the filter text
+            if (
+                nameValue.toLowerCase().includes(filter) ||
+                brandValue.toLowerCase().includes(filter) ||
+                storeValue.toLowerCase().includes(filter)
+            ) {
+                trs[i].style.display = '';
+            } else {
+                trs[i].style.display = 'none';
+            }
+        }
+    }
+}
