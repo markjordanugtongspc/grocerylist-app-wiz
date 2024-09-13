@@ -1,3 +1,4 @@
+/* General Styles */
 * {
   margin: 0;
   padding: 0;
@@ -9,6 +10,7 @@ body {
   background-color: #f0f4f8;
 }
 
+/* Container and Dashboard Layout */
 .container {
   width: 100%;
   height: 100vh;
@@ -28,6 +30,7 @@ body {
   overflow: hidden;
 }
 
+/* Header Styles */
 .header {
   display: flex;
   align-items: center;
@@ -46,6 +49,7 @@ body {
   margin: 0;
 }
 
+/* Content Area Styles */
 .content {
   text-align: center;
   position: relative;
@@ -55,6 +59,7 @@ body {
   width: 100%;
 }
 
+/* Image Styles */
 .image {
   max-width: 100%;
   height: auto;
@@ -100,7 +105,7 @@ img.image {
   z-index: 3;
 }
 
-/* Ensure text is visible over background images */
+/* Text and Button Styles */
 .text-wrapper, .text-wrapper-2, .p, .rectangle {
   position: relative;
   z-index: 4;
@@ -141,6 +146,7 @@ img.image {
   background-color: #e06666;
 }
 
+/* Sidebar Styles */
 .sidebar {
   position: fixed;
   top: 0;
@@ -158,6 +164,7 @@ img.image {
   left: 0;
 }
 
+/* User Profile Styles */
 .user-profile {
   text-align: center;
   margin-bottom: 20px;
@@ -353,6 +360,42 @@ img.image {
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
+/* Modern Scrollbar Styles */
+.modal-content,
+.shopping-list-modal-content {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+.modal-content::-webkit-scrollbar,
+.shopping-list-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track,
+.shopping-list-modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb,
+.shopping-list-modal-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover,
+.shopping-list-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Ensure modal content is scrollable */
+.modal-content,
+.shopping-list-modal-content {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
 .close {
   color: #aaa;
   float: right;
@@ -538,7 +581,6 @@ priority-options input[type="radio"]:checked + .priority-label.medium {
   margin-top: 20px;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .modal-content {
     width: 95%;
@@ -582,7 +624,7 @@ priority-options input[type="radio"]:checked + .priority-label.medium {
   width: 100%;
   box-sizing: border-box;
   transition: background-color 0.3s ease;
-  text-align: left; /* Align text to the left within list items */
+  text-align: left; 
 }
 
 .list-item.clickable {
@@ -625,7 +667,6 @@ body {
   overflow: hidden;
 }
 
-/* Updated responsive adjustments */
 @media (max-width: 1366px) {
   .dashboard {
     max-width: 95%;
@@ -719,7 +760,6 @@ img.image {
   z-index: 3;
 }
 
-/* Ensure text is visible over background images */
 .text-wrapper, .text-wrapper-2, .p, .rectangle {
   position: relative;
   z-index: 4;
@@ -864,6 +904,7 @@ img.image {
   text-align: center;
 }
 
+/* Responsive Styles */
 @media (max-width: 768px) {
   .dashboard {
     max-width: 90%;
@@ -947,7 +988,7 @@ img.image {
   color: #4CAF50;
   transform: translateX(5px);
 }
-
+/* Modal Styles */
 .modal {
   display: none;
   position: fixed;
@@ -986,6 +1027,7 @@ img.image {
   color: #000;
 }
 
+/* List Edit Modal Styles */
 .list-edit-container {
   display: flex;
   flex-direction: column;
@@ -1028,6 +1070,7 @@ img.image {
   color: #666;
 }
 
+/* Priority Selector Styles */
 .priority-selector {
   display: flex;
   flex-direction: column;
@@ -1102,6 +1145,7 @@ priority-options input[type="radio"]:checked + .priority-label.medium {
   background-color: #ff3333;
 }
 
+/* Product Input Styles */
 #productInputContainer {
   display: flex;
   gap: 10px;
@@ -1122,6 +1166,7 @@ priority-options input[type="radio"]:checked + .priority-label.medium {
   background-color: #45a049;
 }
 
+/* Product List Styles */
 .product-list {
   list-style-type: none;
   padding: 0;
@@ -1157,7 +1202,7 @@ priority-options input[type="radio"]:checked + .priority-label.medium {
   margin-top: 20px;
 }
 
-/* Responsive design */
+/* Responsive Modal Styles */
 @media (max-width: 768px) {
   .modal-content {
     width: 95%;
@@ -1192,6 +1237,7 @@ priority-options input[type="radio"]:checked + .priority-label.medium {
   }
 }
 
+/* List Item Styles */
 .list-item {
   background-color: #e5e4e4;
   border-radius: 8px;
@@ -1201,7 +1247,7 @@ priority-options input[type="radio"]:checked + .priority-label.medium {
   width: 100%;
   box-sizing: border-box;
   transition: background-color 0.3s ease;
-  text-align: left; /* Align text to the left within list items */
+  text-align: left; 
 }
 
 .list-item.clickable {
@@ -1310,9 +1356,9 @@ priority-options input[type="radio"]:checked + .priority-label.medium {
 
 .list-edit-modal {
   width: 90%;
-  max-width: 500px; /* Reduced max-width for better fit */
-  max-height: 80vh; /* Set a maximum height */
-  overflow-y: auto; /* Allow scrolling if content exceeds height */
+  max-width: 500px; 
+  max-height: 80vh; 
+  overflow-y: auto; 
   background-color: #fff;
   border-radius: 15px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -1320,7 +1366,7 @@ priority-options input[type="radio"]:checked + .priority-label.medium {
   top: 42%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: all 0.3s ease; /* Smooth transition */
+  transition: all 0.3s ease; 
 }
 
 .list-edit-container {
@@ -1514,7 +1560,7 @@ span.product-quantity {
 .remove-btn:hover {
   background-color: #ff3333;
 }
-
+/* Settings Modal Styles */
 .settings-modal {
   max-width: 400px;
   padding: 30px;
@@ -1902,7 +1948,7 @@ span.product-quantity {
 #saveListBtn:hover {
   background-color: #45a049;
 }
-/* Add styles for the new updated list modal */
+
 .updated-list-modal {
   max-width: 400px;
   padding: 30px;
@@ -1988,17 +2034,16 @@ span.product-quantity {
   border-color: #4CAF50;
 }
 
-/* Modernized Modal For Shopping List */
 .shopping-list-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Darker background for better focus */
-  display: none; /* Hidden by default */
-  align-items: center; /* Center content vertically */
-  justify-content: center; /* Center content horizontally */
+  background-color: rgba(0, 0, 0, 0.6); 
+  display: none; 
+  align-items: center; 
+  justify-content: center; 
   z-index: 1000;
   overflow: auto;
 }
@@ -2139,6 +2184,7 @@ span.product-quantity {
   }
   .modal-table th, .modal-table td {
     font-size: 0.9em;
+    padding: 8px; 
   }
   .shopping-list-modal-buttons button {
     flex: 1 1 45%;
@@ -2155,6 +2201,7 @@ span.product-quantity {
   }
   .modal-table th, .modal-table td {
     font-size: 0.8em;
+    padding: 6px; 
   }
   .shopping-list-modal-buttons button {
     flex: 1 1 100%;
@@ -2162,17 +2209,41 @@ span.product-quantity {
   }
 }
 
-/* Additional Media Queries for Mobile S and M */
-@media (max-width: 375px) {
+@media (max-width: 425px) {
   .modal-title {
     font-size: 1.1em;
   }
   .modal-subtitle, .shopping-list-total {
     font-size: 0.85em;
   }
+  .modal-table {
+    width: 100%; 
+    overflow-x: auto; 
+  }
   .modal-table th, .modal-table td {
-    font-size: 0.75em;
-    padding: 8px;
+    font-size: 0.7em; 
+    padding: 6px; 
+  }
+  .shopping-list-modal-buttons button {
+    flex: 1 1 100%;
+    padding: 6px; 
+  }
+}
+
+@media (max-width: 375px) {
+  .modal-title {
+    font-size: 0.15em;
+  }
+  .modal-subtitle, .shopping-list-total {
+    font-size: 0.90em;
+  }
+  .modal-table {
+    width: 100%;
+    overflow-x: auto;
+  }
+  .modal-table th, .modal-table td {
+    font-size: 0.70em;
+    padding: 4px;
   }
   .shopping-list-modal-buttons button {
     flex: 1 1 100%;
@@ -2182,17 +2253,21 @@ span.product-quantity {
 
 @media (max-width: 320px) {
   .modal-title {
-    font-size: 1em;
+    font-size: 0.9em;
   }
   .modal-subtitle, .shopping-list-total {
-    font-size: 0.7em;
+    font-size: 1.65em;
+  }
+  .modal-table {
+    width: 100%;
+    overflow-x: auto;
   }
   .modal-table th, .modal-table td {
     font-size: 0.6em;
-    padding: 6px;
+    padding: 3px;
   }
   .shopping-list-modal-buttons button {
     flex: 1 1 100%;
-    padding: 5px;
+    padding: 1px;
   }
 }
