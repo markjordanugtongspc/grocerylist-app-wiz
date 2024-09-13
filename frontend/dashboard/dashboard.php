@@ -103,7 +103,7 @@ $conn->close(); // Close the database connection
                         <div class="list-container">
                             <?php foreach ($lists as $list): ?>
                                 <!-- List item that is clickable to view details -->
-                                <div class="list-item clickable" data-id="<?php echo $list['ListID']; ?>" onclick="handleListClick(<?php echo $list['ListID']; ?>)">
+                                <div class="list-item clickable priority-<?php echo strtolower($list['Priority']); ?>" data-id="<?php echo $list['ListID']; ?>" onclick="handleListClick(<?php echo $list['ListID']; ?>)">
                                     <h3><?php echo htmlspecialchars($list['ListName']); ?></h3> <!-- Display list name -->
                                     <p>Due: <?php echo $list['DueDate']; ?></p> <!-- Display due date -->
                                     <p class="priority">
