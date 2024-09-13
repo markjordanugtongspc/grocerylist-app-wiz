@@ -615,26 +615,6 @@ priority-options input[type="radio"]:checked + .priority-label.medium {
   }
 }
 
-.list-item {
-  background-color: #e5e4e4;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  width: 100%;
-  box-sizing: border-box;
-  transition: background-color 0.3s ease;
-  text-align: left; 
-}
-
-.list-item.clickable {
-  cursor: pointer;
-}
-
-.list-item.clickable:hover {
-  background-color: #f0f0f0;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -1255,7 +1235,23 @@ priority-options input[type="radio"]:checked + .priority-label.medium {
 }
 
 .list-item.clickable:hover {
-  background-color: #f0f0f0;
+  filter: brightness(95%);
+}
+
+/* Priority-based colors */
+.list-item.priority-high {
+  background-color: #ffcccb; /* Light red */
+  color: #8b0000; /* Dark red for text */
+}
+
+.list-item.priority-medium {
+  background-color: #fffacd; /* Light yellow */
+  color: #8b8000; /* Dark yellow for text */
+}
+
+.list-item.priority-low {
+  background-color: #e0ffff; /* Light cyan */
+  color: #008b8b; /* Dark cyan for text */
 }
 
 .priority {
