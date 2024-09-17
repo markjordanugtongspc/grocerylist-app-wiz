@@ -761,6 +761,85 @@ function toggleSearchBar() {
         }
     });
 
+// Function to set a cookie
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+
+// Function to get a cookie
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+// Function to apply theme
+function applyTheme(theme) {
+    if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+}
+
+// Function to set theme
+function setTheme(theme) {
+    applyTheme(theme);
+    setCookie('theme', theme, 365); // Save theme preference for 1 year
+}
+
+// Check for saved theme preference or default to 'light'
+const savedTheme = getCookie('theme') || 'light';
+applyTheme(savedTheme);
+
+// Update radio buttons to match current theme
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById(savedTheme + 'Mode').checked = true;
+
+    // Event listener for theme toggle
+    document.querySelectorAll('input[name="themePreference"]').forEach((input) => {
+        input.addEventListener('change', (e) => {
+            setTheme(e.target.value);
+        });
+    });
+
+    // Update settings form submission
+    document.getElementById('settingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        
+        // Theme is already saved when radio button changes
+        
+        // Handle other form data (e.g., username change) here
+        // ...
+
+        showSuccessMessage('Settings updated successfully');
+    });
+});
+
+// Function to show success message
+function showSuccessMessage(message) {
+    const messagePopup = document.getElementById('messagePopup');
+    const popupMessage = document.getElementById('popupMessage');
+    popupMessage.textContent = message;
+    messagePopup.classList.add('success');
+    messagePopup.style.display = 'block';
+    setTimeout(() => {
+        messagePopup.style.display = 'none';
+    }, 3000);
+}
+
 // Function to filter products in the shopping list modal by product name
 function searchProduct() {
     const input = document.getElementById('searchBar');
