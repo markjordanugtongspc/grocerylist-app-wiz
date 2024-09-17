@@ -21,13 +21,19 @@ body {
   width: 90%;
   max-width: 800px;
   padding: 30px;
+  border-right: 2px solid #4caf50; /* Add green border to the right */
+  border-left: 2px solid #4caf50; /* Add green border to the left */
+  border-bottom: 2px solid #4caf50; /* Add green border to the bottom */
 }
+
 .header {
   display: flex;
-  justify-content: center; /* Center the content */
+  justify-content: center;
   align-items: center;
   margin-bottom: 30px;
-  position: relative; /* Allows absolute positioning for back arrow */
+  position: relative;
+  border-bottom: 2px solid #4caf50; /* Add green border to the bottom of the header */
+  padding-bottom: 15px; /* Add some padding to separate content from border */
 }
 .header h1 {
   font-size: 24px;

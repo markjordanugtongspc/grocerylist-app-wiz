@@ -35,6 +35,8 @@ body {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  border-bottom: 2px solid #4caf50; /* Add green border to the bottom of the header */
+  padding-bottom: 10px; /* Add some padding to separate content from border */
 }
 
 .hamburger {
@@ -153,11 +155,12 @@ img.image {
   left: -250px;
   width: 250px;
   height: 100%;
-  background-color: #ffffff;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  background-color: #fff; /* White background to match login container */
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
   transition: left 0.3s;
   z-index: 1000;
   padding: 20px;
+  border-right: 2px solid #4caf50; /* Green border to match login container */
 }
 
 .sidebar.active {
@@ -174,7 +177,7 @@ img.image {
   width: 80px;
   height: 80px;
   margin: 0 auto 10px;
-  background-color: #f0f0f0;
+  background-color: #e8f5e9; /* Light green background */
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -184,15 +187,7 @@ img.image {
 
 .avatar-container i {
   font-size: 48px;
-  color: #666;
-}
-
-.nameplate {
-  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-  border-radius: 20px;
-  padding: 8px 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: inline-block;
+  color: #4caf50; /* Green color for the icon */
 }
 
 #usernameDisplay {
@@ -231,7 +226,7 @@ img.image {
   width: 100%;
   padding: 10px;
   background-color: transparent;
-  color: #333;
+  color: #333; /* Dark text color to match login page */
   text-align: left;
   text-decoration: none;
   border: none;
@@ -242,7 +237,7 @@ img.image {
 }
 
 .sidebar-btn:hover {
-  color: #4CAF50;
+  color: #4caf50; /* Green color on hover to match login button */
   transform: translateX(5px);
 }
 
@@ -346,18 +341,21 @@ img.image {
   height: 100%;
   overflow: auto;
   background-color: rgba(0,0,0,0.4);
-  backdrop-filter: blur(5px);
 }
 
 .modal-content {
-  background-color: #fff;
+  background-color: #fefefe;
   margin: 5% auto;
-  padding: 30px;
-  border: none;
-  border-radius: 15px;
-  width: 90%;
-  max-width: 600px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 605px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Modern Scrollbar Styles */
@@ -638,13 +636,14 @@ body {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 90%;
+  width: 95%;
   max-width: 1200px;
-  padding: 20px;
-  position: relative;
+  padding: 15px;
   margin: 0 auto;
-  transition: max-width 0.3s ease;
   overflow: hidden;
+  border-right: 2px solid #4caf50; /* Add green border to the right */
+  border-left: 2px solid #4caf50; /* Add green border to the left */
+  border-bottom: 2px solid #4caf50; /* Add green border to the bottom */
 }
 
 @media (max-width: 1366px) {
@@ -820,7 +819,7 @@ img.image {
 }
 
 .nameplate {
-  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  background: #4caf50; /* Green background */
   border-radius: 20px;
   padding: 8px 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -839,7 +838,7 @@ img.image {
   display: block;
   width: 100%;
   padding: 10px;
-  background-color: #f37979;
+  background-color: #4caf50; /* Green background to match login button */
   color: white;
   text-align: left;
   text-decoration: none;
@@ -849,7 +848,7 @@ img.image {
 }
 
 .logout-btn:hover {
-  background-color: #e06666;
+  background-color: #45a049; /* Darker green on hover to match login button */
 }
 
 .logout-btn i {
@@ -1562,6 +1561,7 @@ span.product-quantity {
   padding: 30px;
   background-color: #f8f9fa;
   border-radius: 15px;
+  border: 2px solid #4caf50; /* Add green border to settings modal */
 }
 
 .settings-modal h2 {
@@ -2053,6 +2053,7 @@ span.product-quantity {
   width: 90%;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
+  border: 2px solid #4caf50; /* Add green border to shopping list modal */
 }
 
 .modal-title {

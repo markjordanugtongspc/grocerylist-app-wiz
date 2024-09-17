@@ -713,6 +713,54 @@ function toggleSearchBar() {
     searchBar.style.display = searchBar.style.display === 'none' ? 'block' : 'none';
 }
 
+    // Get all modals
+    const modals = [
+        document.getElementById('addProductModal'),
+        document.getElementById('editProductModal'),
+        document.getElementById('settingsModal'),
+        document.getElementById('shoppingListModal')
+    ];
+
+    // Function to close modal
+    function closeModal(modal) {
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        modals.forEach(modal => {
+            if (event.target === modal) {
+                closeModal(modal);
+            }
+        });
+    });
+
+    // Prevent closing when clicking inside the modal content
+    modals.forEach(modal => {
+        if (modal) {
+            const modalContent = modal.querySelector('.modal-content') || modal.querySelector('.shopping-list-modal-content');
+            if (modalContent) {
+                modalContent.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+            }
+        }
+    });
+
+    // Close button functionality (if not already implemented)
+    modals.forEach(modal => {
+        if (modal) {
+            const closeBtn = modal.querySelector('.close') || modal.querySelector('.shopping-list-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    closeModal(modal);
+                });
+            }
+        }
+    });
+
 // Function to filter products in the shopping list modal by product name
 function searchProduct() {
     const input = document.getElementById('searchBar');

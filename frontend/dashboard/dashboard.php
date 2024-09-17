@@ -288,7 +288,7 @@ $conn->close(); // Close the database connection
                 <input type="file" id="editProductImage" name="productImage" class="form-control">
                 <span class="file-name">No file chosen</span>
             </div>
-            <<div class="form-group">
+            <div class="form-group">
     <button type="submit" class="btn btn-primary btn-submit">Update Product</button>
 </div>
         </form>
