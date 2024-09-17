@@ -125,7 +125,7 @@ $conn->close(); // Close the database connection
 <!-- Modal for Profile Settings -->
 <div id="settingsModal" class="modal">
     <div class="modal-content settings-modal">
-        <span class="close">&times;</span> <!-- Close button -->
+        <span class="close">&times;</span>
         <h2>Profile Settings</h2>
         <form id="settingsForm" enctype="multipart/form-data">
             <div class="form-group">
@@ -140,6 +140,16 @@ $conn->close(); // Close the database connection
                         <i class="fas fa-cloud-upload-alt"></i> Choose File
                     </label>
                     <span class="file-name">No file chosen</span>
+                </div>
+            </div>
+            <!-- New theme preference setting -->
+            <div class="form-group">
+                <label>Theme Preference</label>
+                <div class="theme-toggle">
+                    <input type="radio" id="lightMode" name="themePreference" value="light">
+                    <label for="lightMode"><i class="fas fa-sun"></i> Light</label>
+                    <input type="radio" id="darkMode" name="themePreference" value="dark">
+                    <label for="darkMode"><i class="fas fa-moon"></i> Dark</label>
                 </div>
             </div>
             <button type="submit" class="btn-submit">Save Changes</button>

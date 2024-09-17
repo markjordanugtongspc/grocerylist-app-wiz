@@ -14,6 +14,32 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'dashboard.php';
     });
 
+
+    // Function to get cookie value
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    // Function to apply theme
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    }
+
+    // Check for saved theme preference or default to 'light'
+    const savedTheme = getCookie('theme') || 'light';
+    applyTheme(savedTheme);
+
     function clearForm() {
         document.getElementById('list-name').value = '';
         dueDateInput.value = '2024-09-06'; // Reset to default date
