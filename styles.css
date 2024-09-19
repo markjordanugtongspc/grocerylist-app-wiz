@@ -7,13 +7,17 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f0f4f8; /* Light blue background */
     color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     padding: 1rem;
+    background-image: url('https://pixvid.org/images/2024/09/18/image8bf20bc3346c058b.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .container {

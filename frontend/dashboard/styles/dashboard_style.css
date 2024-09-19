@@ -7,7 +7,9 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #f0f4f8;
+  background-image: url('https://pixvid.org/images/2024/09/18/image8bf20bc3346c058b.png');
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 /* Container and Dashboard Layout */
@@ -155,12 +157,15 @@ img.image {
   left: -250px;
   width: 250px;
   height: 100%;
-  background-color: #fff; /* White background to match login container */
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   transition: left 0.3s;
   z-index: 1000;
   padding: 20px;
   border-right: 2px solid #4caf50; /* Green border to match login container */
+  background-size: cover;
+  background-blend-mode: overlay;
+  background-color: rgba(255, 255, 255, 0.7);
+  background-image: url('https://pixvid.org/images/2024/09/18/image8bf20bc3346c058b.png');
 }
 
 .sidebar.active {
@@ -344,7 +349,6 @@ img.image {
 }
 
 .modal-content {
-  background-color: #fefefe;
   margin: 5% auto;
   padding: 20px;
   border: 1px solid #888;
@@ -777,23 +781,6 @@ img.image {
 
 .rectangle:hover {
   background-color: #e06666;
-}
-
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: -250px;
-  width: 250px;
-  height: 100%;
-  background-color: #ffffff;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-  transition: left 0.3s;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.sidebar.active {
-  left: 0;
 }
 
 .user-profile {
@@ -2173,7 +2160,50 @@ body.dark-mode {
   background-color: #121212;
   color: #e0e0e0;
 }
+.modal-content.list-edit-modal,
+.modal-content.add-product-modal,
+.modal-content.settings-modal,
+.shopping-list-modal-content {
+  background-image: url('https://pixvid.org/images/2024/09/18/image8bf20bc3346c058b.png');
+  background-size: cover;
+  background-color: rgba(255, 255, 255, 0.7);
+  background-blend-mode: overlay;
+}
 
+/* Ensure visibility in dark mode */
+.dark-mode body,
+.dark-mode .sidebar,
+.dark-mode #listModal,
+.dark-mode #productModal,
+.dark-mode #editProductModal {
+  background-color: rgba(0, 0, 0, 0.7);
+  background-blend-mode: overlay;
+}
+
+.dark-mode .sidebar,
+.dark-mode #listModal,
+.dark-mode #productModal,
+.dark-mode #editProductModal {
+  color: #e0e0e0;
+}
+
+.dark-mode #listModal h2 {
+  color: #4CAF50;
+}
+
+.dark-mode #listModal input[type="text"],
+.dark-mode #listModal input[type="date"],
+.dark-mode #listModal select,
+.dark-mode #productModal input[type="text"],
+.dark-mode #productModal input[type="number"],
+.dark-mode #productModal select,
+.dark-mode #editProductModal input[type="text"],
+.dark-mode #editProductModal input[type="number"],
+.dark-mode #editProductModal select {
+  background-color: rgba(44, 44, 44, 0.8);
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+}
 .dark-mode .dashboard {
   background-color: #1e1e1e;
   border-color: #4CAF50;
