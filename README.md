@@ -51,7 +51,7 @@ Before you begin, ensure that you have XAMPP installed. You can download it from
     <li><strong>Install Dependencies</strong>: Ensure that your local server (like <a href="https://www.apachefriends.org/download.html" target="_blank">XAMPP</a>) is running.</li>
     <li><strong>Set Up Database</strong>:</li>
     <ol>
-        <li>Download the SQL file from the following link: <a href="https://cdn.discordapp.com/attachments/796388805572558869/1285739331771695215/grocery_list_db.sql?ex=66eb5d90&is=66ea0c10&hm=885bc6fc7b66daacf6b5935eba077ff56c8264bf81db17e24169f840420f273c&" target="_blank">grocery_list_db.sql</a>.</li>
+        <li>Download the SQL file from the following link: <a href="https://dropmb.com/api/shares/k0NDgxM/files/a4a9423d-ec7c-4591-9c7d-bcc6083b8c01" target="_blank">grocery_list_db.sql</a>.</li>
         <li>Open your web browser and go to <a href="http://localhost/phpmyadmin" target="_blank">phpMyAdmin</a>.</li>
         <li>Click on the <strong>Databases</strong> tab.</li>
         <li>In the "Create database" field, enter <code>grocery_list_db</code>.</li>
