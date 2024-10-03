@@ -7,7 +7,7 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  background-image: url('https://pixvid.org/images/2024/09/18/image8bf20bc3346c058b.png');
+  background-image: url('https://pixvid.org/images/2024/10/03/grocery-list-background.webp');
   background-size: cover;
   background-attachment: fixed;
 }
@@ -165,7 +165,7 @@ img.image {
   background-size: cover;
   background-blend-mode: overlay;
   background-color: rgba(255, 255, 255, 0.7);
-  background-image: url('https://pixvid.org/images/2024/09/18/image8bf20bc3346c058b.png');
+  background-image: url('https://pixvid.org/images/2024/10/03/grocery-list-background.webp');
 }
 
 .sidebar.active {
@@ -2164,7 +2164,7 @@ body.dark-mode {
 .modal-content.add-product-modal,
 .modal-content.settings-modal,
 .shopping-list-modal-content {
-  background-image: url('https://pixvid.org/images/2024/09/18/image8bf20bc3346c058b.png');
+  background-image: url('https://pixvid.org/images/2024/10/03/grocery-list-background.webp');
   background-size: cover;
   background-color: rgba(255, 255, 255, 0.7);
   background-blend-mode: overlay;
