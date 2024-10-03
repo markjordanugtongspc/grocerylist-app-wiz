@@ -1,4 +1,4 @@
-<h2>Grocery List App - Mark Jordans</h2>
+<h2>Grocery List App - Mark Jordan</h2>
 
 <p>
 This project is a comprehensive and responsive Grocery List App built using PHP, HTML, CSS, and JavaScript. The app includes advanced features such as authentication, dynamic product management, and an interactive shopping list modal.
