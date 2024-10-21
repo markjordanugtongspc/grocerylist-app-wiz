@@ -1,0 +1,117 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7); /* Darker overlay for better contrast */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensure modal is on top */
+    transition: opacity 0.3s ease; /* Smooth transition */
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%; /* Responsive width */
+    max-width: 500px; /* Increased max width for better content display */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Deeper shadow for a modern look */
+    animation: slideIn 0.3s ease; /* Add a slide-in animation */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-title {
+    font-size: 1.5rem; /* Larger title size */
+    margin-bottom: 15px; /* Space below title */
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column; /* Stack input fields vertically */
+}
+
+.modal-input {
+    margin-bottom: 10px;
+    padding: 10px;
+    width: calc(100% - 22px);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s; /* Smooth border color transition */
+}
+
+.modal-input:focus {
+    border-color: green; /* Highlight border on focus */
+    outline: none; /* Remove default outline */
+}
+
+.modal-button-group {
+    display: flex;
+    justify-content: space-between; /* Space buttons apart */
+    margin-top: 15px; /* Space above button group */
+}
+
+.modal-submit-button,
+.modal-close-button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s; /* Smooth background transition */
+}
+
+.modal-submit-button {
+    background-color: green;
+    color: white;
+    margin-right: 10px; /* Space between buttons */
+}
+
+.modal-submit-button:hover {
+    background-color: darkgreen; /* Darker shade on hover */
+}
+
+.modal-close-button {
+    background-color: red;
+    color: white;
+}
+
+.modal-close-button:hover {
+    background-color: darkred; /* Darker shade on hover */
+}
+
+.uploaded-image {
+    margin-top: 10px;
+    width: 100%; /* Responsive image */
+    max-width: 100%; /* Full width to avoid overflow */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px; /* Slightly rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow on the image */
+}
+
+/* Media Query for Smaller Screens */
+@media (max-width: 480px) {
+    .modal-content {
+        width: 95%; /* Adjust width on small screens */
+    }
+
+    .modal-title {
+        font-size: 1.2rem; /* Smaller title on mobile */
+    }
+
+    .modal-submit-button,
+    .modal-close-button {
+        padding: 8px; /* Smaller button padding */
+    }
+}
