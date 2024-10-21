@@ -1,5 +1,5 @@
 <?php
-$servername = "localhost";
+$servername = "localhost:4306"; // Adjust port if needed
 $username = "root";
 $password = "";
 $dbname = "grocery_list_db";

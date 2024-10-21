@@ -1,0 +1,62 @@
+.App {
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.App-header {
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.App-icon {
+  margin-top: 20px;
+  width: 50px;
+  height: 50px;
+}
+
+.Container {
+  position: absolute; /* Make it absolute to position relative to the header */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust position to center */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the content */
+}
+
+@media only screen and (max-width: 600px) {
+  .App {
+    height: 125vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .App-header {
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .App-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Responsive styles for Samsung Galaxy A51/71 dimensions */
+@media (max-width: 412px) and (max-height: 914px) {
+  .App {
+    height: auto; /* Allow height to adjust */
+    padding: 10px; /* Add some padding */
+  }
+  
+  .Container {
+    width: 90%; /* Make container responsive */
+    padding: 10px; /* Add padding to the container */
+  }
+}

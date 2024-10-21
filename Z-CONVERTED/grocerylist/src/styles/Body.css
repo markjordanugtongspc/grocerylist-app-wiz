@@ -1,0 +1,116 @@
+.body-container {
+    margin: 20px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    width: 300px;
+    text-align: left;
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack children vertically */
+    justify-content: space-between; /* Space out items */
+    height: 100%; /* Allow full height for centering */
+  }
+  
+  .body-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .green-line {
+    border: none;
+    height: 4px; /* Increase height for better visibility */
+    background-color: rgb(0, 255, 0);
+    margin-bottom: 20px;
+  }
+  
+  .dynamic-list {
+    margin-bottom: 20px;
+    flex-grow: 1; /* Allow this section to grow */
+  }
+  
+  .list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .item-text {
+    flex: 1;
+    font-size: 18px;
+  }
+  
+  .button-group {
+    display: flex;
+  }
+  
+  .edit-button,
+  .delete-button {
+    padding: 5px 10px;
+    margin-left: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .edit-button {
+    background-color: orange;
+    color: white;
+  }
+  
+  .delete-button {
+    background-color: red;
+    color: white;
+  }
+  
+  .item-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    width: calc(100% - 22px);
+  }
+  
+  .add-list-button {
+    margin-top: auto; /* Push the button to the bottom */
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  /* Media Query for Android Devices */
+  @media (max-width: 480px) {
+    .body-container {
+      width: 90%; /* Make the container take up 90% of the width on small screens */
+      margin: 10px auto; /* Center the container */
+    }
+  
+    .body-title {
+      font-size: 20px; /* Reduce the title font size */
+    }
+  
+    .item-text {
+      font-size: 16px; /* Reduce the item text font size */
+    }
+  
+    .item-input {
+      font-size: 16px; /* Adjust input font size */
+    }
+  
+    .add-list-button {
+      font-size: 16px; /* Adjust button font size */
+    }
+  
+    .edit-button,
+    .delete-button {
+      font-size: 14px; /* Adjust button font size */
+    }
+  }
+  
