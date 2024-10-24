@@ -1,7 +1,7 @@
 <h2>Grocery List App - Mark Jordan</h2>
 
 <p>
-This project is a comprehensive and responsive Grocery List App built using PHP, HTML, CSS, and JavaScript. The app includes advanced features such as authentication, dynamic product management, and an interactive shopping list modal.
+This project is a comprehensive and responsive Grocery List App built using PHP, HTML, CSS, and JavaScript. The app includes advanced features such as authentication, dynamic product management, and an interactive shopping list modal. Additionally, there is a React Converted app located in the <code>Z-CONVERTED/grocerylist</code> folder.
 </p>
 
 <h2>Features</h2>
@@ -24,6 +24,7 @@ This project is a comprehensive and responsive Grocery List App built using PHP,
     <li><strong>HTML5</strong>: Structure of the web application.</li>
     <li><strong>CSS3</strong>: Styling for a modern and responsive interface.</li>
     <li><strong>JavaScript</strong>: Dynamic content loading, form validation, and interactive features.</li>
+    <li><strong>React</strong>: For the React Converted app located in the <code>Z-CONVERTED/grocerylist</code> folder.</li>
     <li><strong>MySQL</strong>: Database management for storing user data and product information. Learn more about MySQL <a href="https://www.mysql.com/" target="_blank">here</a>.</li>
 </ul>
 
