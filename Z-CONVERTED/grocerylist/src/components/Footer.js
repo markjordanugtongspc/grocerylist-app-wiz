@@ -1,13 +1,14 @@
-import "../styles/Footer.css";
+import "../styles/Footer.css";  // Import CSS for styling
+import React from "react";  // Import React
 
-import React from "react";
-
+// Define the Footer component (no props needed)
 function Footer() {
   return (
     <div className="Footer">
-      <span>Copyright &copy; 2024</span>
+      {/* Static footer content */}
+      <span>Copyright &copy; 2024</span>  {/* Display copyright notice */}
     </div>
   );
 }
 
-export default Footer;
+export default Footer;  // Export the Footer component

@@ -1,25 +1,32 @@
-import './App.css';  // Import global styles for the app.
-import Header from "./components/Header.js";  // Import the Header component.
-import Body from "./components/Body.js";  // Import the Body component.
-import Footer from "./components/Footer.js";  // Import the Footer component.
+import './App.css';  // Import the CSS file for styling the App component
+import Header from "./components/Header.js";  // Import the Header component from the components folder
+import Body from "./components/Body.js";  // Import the Body component from the components folder
+import Footer from "./components/Footer.js";  // Import the Footer component from the components folder
 
+// Define the main App component
 function App() {
-  // Variables to hold data that will be passed as props to child components.
-  const backgroundImage = "https://pixvid.org/images/2024/10/03/grocery-list-background.webp";  // Background image URL.
-  const logoImage = "https://pixvid.org/images/2024/10/02/imagea30e0a95662e6a70.png";  // Logo image URL.
-  const title = "Grocery List";  // Title for the Body component.
 
+  // Define a constant for the background image URL
+  const backgroundImage = "https://pixvid.org/images/2024/10/03/grocery-list-background.webp";  
+  // Define a constant for the logo image URL
+  const logoImage = "https://pixvid.org/images/2024/10/02/imagea30e0a95662e6a70.png";  
+  // Define a constant for the title of the grocery list
+  const title = "Grocery List";  
+
+  // The component returns the following JSX structure
   return (
     <>
+    {/* Parent div that holds the entire app layout */}
     <div>
-      {/* Pass backgroundImage and logoImage as props to the Header component */}
+      {/* Render the Header component, passing backgroundImage and logoImage as props */}
       <Header backgroundImage={backgroundImage} logoImage={logoImage} />
 
+      {/* Main content container */}
       <div className="Container">
-        {/* Pass title as a prop to the Body component */}
+        {/* Render the Body component and pass the title as a prop */}
         <Body title={title} />
 
-        {/* Render Footer component (no props needed here) */}
+        {/* Render the Footer component */}
         <Footer />
       </div>
     </div>
@@ -27,4 +34,4 @@ function App() {
   );
 }
 
-export default App;  // Export the App component to be used as the main component in the application.
+export default App; // Export the App component as the default export of this file

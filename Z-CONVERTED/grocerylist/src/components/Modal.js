@@ -1,88 +1,99 @@
-import React from 'react';  // Import React for JSX usage.
-import "../styles/Modal.css";  // Import the CSS file for the Modal component styling.
+import React from 'react';  // Import React
+import "../styles/Modal.css";  // Import CSS for styling
 
+// Define the Modal component, which accepts isOpen (to control visibility), onClose (function to close it), onSubmit (form submission handler), item (product details), and setItem (function to update the item)
 const Modal = ({ isOpen, onClose, onSubmit, item, setItem }) => {
-  // If the modal is not open, return null and do not render anything.
+
+  // If the modal is not open, return null (don't render anything)
   if (!isOpen) return null;
 
-  // Function to handle form submission.
+  // Handle form submission (prevents page reload and calls onSubmit function)
   const handleSubmit = (e) => {
-    e.preventDefault();  // Prevent the default form submission behavior.
-    onSubmit();  // Call the onSubmit function passed as a prop from the parent (Body component).
+    e.preventDefault();  
+    onSubmit();  
   };
 
-  // Function to handle image file selection.
+  // Handle image input change (creates a preview of the selected image)
   const handleImageChange = (e) => {
-    const file = e.target.files[0];  // Get the selected file from the input.
+    const file = e.target.files[0];  // Get the first file selected
     if (file) {
-      const imageUrl = URL.createObjectURL(file);  // Create a temporary URL for the image file.
-      setItem({ ...item, image: imageUrl });  // Update the item state with the selected image URL.
+      const imageUrl = URL.createObjectURL(file);  // Create a local URL for the image
+      setItem({ ...item, image: imageUrl });  // Update the item state with the new image
     }
   };
 
   return (
-    // Modal overlay that triggers the onClose function when clicked (outside the modal content).
-    <div className="modal-overlay" onClick={onClose}>
-      {/* Modal content. The e.stopPropagation prevents the modal from closing when clicking inside the modal content. */}
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        {/* Modal title that changes based on whether an item is being edited or added */}
+    <div className="modal-overlay" onClick={onClose}>  {/* Modal overlay that closes modal on click */}
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>  {/* Modal content, click is stopped from closing the modal */}
+        
         <h2 className="modal-title">
-          {item.editIndex !== null ? 'Edit Item' : 'Add New Item'}
+          {item.editIndex !== null ? 'Edit Item' : 'Add New Item'}  {/* Display "Edit" or "Add New" based on whether editing or adding */}
         </h2>
 
-        {/* Form for adding or editing an item */}
         <form onSubmit={handleSubmit} className="modal-form">
-          {/* Input for product name */}
+          
+          {/* Input for item name */}
           <input
             type="text"
-            value={item.name}  // Set the value to the current item name.
-            onChange={(e) => setItem({ ...item, name: e.target.value })}  // Update the name in item state.
+            value={item.name}  // Bind to item.name
+            onChange={(e) => setItem({ ...item, name: e.target.value })}  // Update item state on change
             placeholder="Product Name"
             className="modal-input"
-            required  // Make the input required.
+            required  // Field is required
           />
 
-          {/* Input for product quantity */}
+          {/* Input for item quantity */}
           <input
             type="number"
-            value={item.quantity}  // Set the value to the current item quantity.
-            onChange={(e) => setItem({ ...item, quantity: e.target.value })}  // Update the quantity in item state.
+            value={item.quantity}  // Bind to item.quantity
+            onChange={(e) => setItem({ ...item, quantity: e.target.value })}  // Update item state on change
             placeholder="Quantity"
             className="modal-input"
-            required  // Make the input required.
+            required  // Field is required
           />
 
-          {/* Input for product price */}
+          {/* Input for item price */}
           <input
             type="number"
-            value={item.price}  // Set the value to the current item price.
-            onChange={(e) => setItem({ ...item, price: e.target.value })}  // Update the price in item state.
+            value={item.price}  // Bind to item.price
+            onChange={(e) => setItem({ ...item, price: e.target.value })}  // Update item state on change
             placeholder="Price"
             className="modal-input"
-            required  // Make the input required.
+            required  // Field is required
           />
+
+          {/* Dropdown for category selection */}
+          <select
+            value={item.category || ""}  // Bind to item.category
+            onChange={(e) => setItem({ ...item, category: e.target.value })}  // Update item state on change
+            className="modal-input"
+            required  // Field is required
+          >
+            <option value="" disabled>Select Category</option>  {/* Default option */}
+            <option value="Fruits">Fruits</option>  {/* Fruits category option */}
+            <option value="Vegetables">Vegetables</option>  {/* Vegetables category option */}
+            <option value="Other">Other</option>  {/* Other category option */}
+          </select>
 
           {/* Input for selecting an image file */}
           <input
             type="file"
-            accept="image/*"  // Accept only image file types.
-            onChange={handleImageChange}  // Call the function to handle image selection.
+            accept="image/*"  // Accept only image files
+            onChange={handleImageChange}  // Call handleImageChange when file is selected
             className="modal-input"
           />
 
-          {/* If an image has been selected, display the preview */}
+          {/* Display the uploaded image if available */}
           {item.image && <img src={item.image} alt="Product" className="uploaded-image" />}
 
-          {/* Button group for form submission and closing the modal */}
+          {/* Modal button group for submitting or closing the modal */}
           <div className="modal-button-group">
-            {/* Submit button changes text based on if editing or adding */}
             <button type="submit" className="modal-submit-button">
-              {item.editIndex !== null ? 'Update Item' : 'Add Item'}
+              {item.editIndex !== null ? 'Update Item' : 'Add Item'}  {/* Show "Update" if editing, otherwise "Add" */}
             </button>
 
-            {/* Close button for closing the modal without submitting */}
             <button type="button" className="modal-close-button" onClick={onClose}>
-              Close
+              Close  {/* Close button to close the modal */}
             </button>
           </div>
         </form>
@@ -91,4 +102,4 @@ const Modal = ({ isOpen, onClose, onSubmit, item, setItem }) => {
   );
 };
 
-export default Modal;  // Export the Modal component for use in other parts of the app.
+export default Modal;  // Export the Modal component

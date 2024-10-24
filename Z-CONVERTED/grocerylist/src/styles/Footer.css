@@ -1,23 +1,23 @@
-/* Footer Styles */
 .Footer {
-    color: rgb(255, 255, 255); /* White text for contrast */
-    text-align: center; /* Centered text */
-    padding: 20px 0; /* Vertical padding for spacing */
-    position: relative; /* Allows for positioning */
-    bottom: 0; /* Fixes footer to the bottom of the viewport */
-    width: 100%; /* Full width */
+  color: rgba(255, 255, 255, 0.8); 
+  text-align: center;
+  padding: 5px 0 5px 51px; 
+  position: fixed; 
+  bottom: 0;
+  width: 100%;
+  z-index: 1000; 
+  font-size: 0.8rem; 
+  background-color: transparent; 
+}
+
+.Footer span:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .Footer {
+    top: 618px;
+    right: -3px
   }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .Footer {
-      padding: 15px 0; /* Slightly less padding on smaller screens */
-    }
-  }
-  
-  /* Hover Effect */
-  .Footer span:hover {
-    text-decoration: underline; /* Underline on hover for interactivity */
-    cursor: pointer; /* Changes cursor to pointer */
-  }
-  
+}

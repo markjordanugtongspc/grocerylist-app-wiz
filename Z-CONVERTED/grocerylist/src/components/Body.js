@@ -1,120 +1,142 @@
-import React, { useState, useEffect } from "react";  // Import React and Hooks for managing state and side effects.
-import "../styles/Body.css";  // Import CSS for styling.
-import Modal from "./Modal";  // Import the Modal component used for adding/editing items.
-import DetailsModal from "./DetailsModal";  // Import DetailsModal to show item details.
+import React, { useState, useEffect } from "react";  // Import React and useState, useEffect hooks
+import "../styles/Body.css";  // Import CSS file for styling
+import Modal from "./Modal";  // Import the Modal component
+import DetailsModal from "./DetailsModal";  // Import the DetailsModal component
+import Apple from "../images/products/fruits/apple.jpg";  // Import image for Apple
+import Carrot from "../images/products/vegetables/carrot.jpg";  // Import image for Carrot
+import Banana from "../images/products/fruits/banana.jpg";  // Import image for Banana
+import Broccoli from "../images/products/vegetables/broccoli.jpg";  // Import image for Broccoli
 
+// Define a static array of product objects with id, name, quantity, price, image, and category
+const staticProducts = [
+  { id: 1, name: "Apple", quantity: "10", price: "20", image: Apple, category: "Fruits" },
+  { id: 2, name: "Carrot", quantity: "15", price: "10", image: Carrot, category: "Vegetables" },
+  { id: 3, name: "Banana", quantity: "12", price: "15", image: Banana, category: "Fruits" },
+  { id: 4, name: "Broccoli", quantity: "8", price: "25", image: Broccoli, category: "Vegetables" },
+];
+
+// Main Body component that accepts 'title' as a prop
 function Body({ title }) {
-  // State to hold the list of items (grocery list).
-  const [listItems, setListItems] = useState([]);
   
-  // State to hold the current item being added/edited, with default values for name, quantity, price, image, and editIndex.
-  const [item, setItem] = useState({ name: "", quantity: "", price: "", image: "", editIndex: null });
+  const [listItems, setListItems] = useState(staticProducts);  // State to manage the list of items, initialized with staticProducts
 
-  // State to control the visibility of the modal for adding/editing items.
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  // State to control the visibility of the details modal for viewing item details.
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  // State to manage the form input (item details) and track if an item is being edited
+  const [item, setItem] = useState({ name: "", quantity: "", price: "", image: "", category: "", editIndex: null });
 
-  // State to store the item selected for viewing details.
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);  // State to control if the add/edit modal is open
 
-  // useEffect to load the list from localStorage when the component mounts (runs only once).
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);  // State to control if the details modal is open
+
+  const [selectedItem, setSelectedItem] = useState(null);  // State to store the item selected for viewing details
+
+  // useEffect to load the items from localStorage when the component mounts
   useEffect(() => {
-    const storedItems = JSON.parse(localStorage.getItem("groceryList")) || [];
-    setListItems(storedItems);  // If items are stored in localStorage, set them to state.
-  }, []);  // Empty dependency array means this runs only once after the component mounts.
+    const storedItems = JSON.parse(localStorage.getItem("groceryList")) || [];  // Retrieve items from localStorage or fallback to staticProducts
+    setListItems(storedItems.length ? storedItems : staticProducts);  // Set listItems state with stored or static data
+  }, []);  // Empty dependency array, so it runs only on mount
 
-  // useEffect to save the list to localStorage whenever the listItems state changes.
+  // useEffect to save the updated listItems to localStorage whenever the listItems state changes
   useEffect(() => {
-    localStorage.setItem("groceryList", JSON.stringify(listItems));  // Store listItems in localStorage.
-  }, [listItems]);  // Runs whenever listItems changes.
+    localStorage.setItem("groceryList", JSON.stringify(listItems));  // Store the listItems in localStorage
+  }, [listItems]);  // Dependency on listItems, so it triggers whenever listItems changes
 
-  // Function to handle adding a new item or editing an existing one.
+  // Function to handle adding or editing an item
   const handleAddItem = () => {
-    // Check if required fields are not empty.
-    if (item.name.trim() !== "" && item.quantity.trim() !== "" && item.price.trim() !== "") {
+    // Only proceed if the form fields are not empty
+    if (item.name.trim() !== "" && item.quantity.trim() !== "" && item.price.trim() !== "" && item.category) {
+      // Create new item, using the editIndex for editing or creating a new id
       const newItem = {
-        name: item.name,  // Item name
-        quantity: item.quantity,  // Item quantity
-        price: item.price,  // Item price
-        image: item.image,  // Item image URL (optional)
+        id: item.editIndex !== null ? item.editIndex : listItems.length + 1,  // Use editIndex for existing item or create new id
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        image: item.image,
+        category: item.category,
       };
-      
-      // Check if editing an item. If editIndex is not null, replace the item at that index.
-      const updatedItems = item.editIndex !== null
-        ? listItems.map((_, index) => (index === item.editIndex ? newItem : _))
-        : [...listItems, newItem];  // If not editing, add the new item to the list.
 
-      setListItems(updatedItems);  // Update the list with the new or edited item.
-      setItem({ name: "", quantity: "", price: "", image: "", editIndex: null });  // Reset the input fields.
-      setIsModalOpen(false);  // Close the modal after adding the item.
+      // If editing, replace the existing item; otherwise, add the new one
+      const updatedItems = item.editIndex !== null
+        ? listItems.map((existingItem) => (existingItem.id === item.editIndex ? newItem : existingItem))
+        : [...listItems, newItem];
+
+      setListItems(updatedItems);  // Update the listItems state
+      setItem({ name: "", quantity: "", price: "", image: "", category: "", editIndex: null });  // Reset the form fields
+      setIsModalOpen(false);  // Close the modal
     }
   };
 
-  // Function to handle editing an existing item.
-  const handleEditItem = (index) => {
-    const { name, quantity, price, image } = listItems[index];  // Get the selected item details.
-    setItem({ name, quantity, price, image, editIndex: index });  // Set the item in state with an editIndex.
-    setIsModalOpen(true);  // Open the modal to allow editing.
+  // Function to handle editing an item (opens modal with pre-filled data)
+  const handleEditItem = (id) => {
+    const itemToEdit = listItems.find((item) => item.id === id);  // Find the item to edit by id
+    if (itemToEdit) {
+      const { name, quantity, price, image, category } = itemToEdit;  // Extract the properties of the item
+      setItem({ name, quantity, price, image, category, editIndex: id });  // Set the form with the existing item data
+      setIsModalOpen(true);  // Open the modal for editing
+    }
   };
 
-  // Function to handle viewing the details of an item.
-  const handleViewDetails = (index) => {
-    setSelectedItem(listItems[index]);  // Set the selected item to state for viewing.
-    setIsDetailsModalOpen(true);  // Open the details modal.
+  // Function to view the details of a selected item (opens details modal)
+  const handleViewDetails = (id) => {
+    const itemToView = listItems.find((item) => item.id === id);  // Find the item to view by id
+    if (itemToView) {
+      setSelectedItem(itemToView);  // Set the selected item state
+      setIsDetailsModalOpen(true);  // Open the details modal
+    }
   };
 
-  // Function to handle deleting an item from the list.
-  const handleDeleteItem = (index) => {
-    setListItems(listItems.filter((_, i) => i !== index));  // Remove the item at the given index.
+  // Function to delete an item from the list
+  const handleDeleteItem = (id) => {
+    setListItems(listItems.filter((item) => item.id !== id));  // Remove the item with the given id from listItems
   };
 
+  // Return the JSX structure for the Body component
   return (
     <div className="body-container">
-      {/* Display the title of the component */}
-      <h2 className="body-title">{title}</h2>
+      <h2 className="body-title">{title}</h2>  {/* Display the title prop */}
+      <hr className="green-line" />  {/* Decorative line */}
       
-      <hr className="green-line" />
-      
-      {/* Display the dynamic list of items */}
-      <div className="dynamic-list">
-        {listItems.map((item, index) => (
-          <div key={index} className="list-item" onClick={() => handleViewDetails(index)}>
-            {/* Display the item name, quantity, and price */}
-            <span className="item-text">{item.name} - {item.quantity}x - ₱{item.price}</span>
-            
-            {/* Edit and delete buttons for each item */}
-            <div className="button-group">
-              <button className="edit-button" onClick={(e) => { e.stopPropagation(); handleEditItem(index); }}>Edit</button>
-              <button className="delete-button" onClick={(e) => { e.stopPropagation(); handleDeleteItem(index); }}>Delete</button>
-            </div>
+      {/* Iterate over different categories */}
+      {["Fruits", "Vegetables", "Other"].map((category) => (
+        <div key={category}>
+          <h3>{category}</h3>  {/* Display the category name */}
+          <div className="dynamic-list">
+            {listItems
+              .filter((item) => item.category === category)  // Filter items by category
+              .map((item) => (
+                <div key={item.id} className="list-item" onClick={() => handleViewDetails(item.id)}>  {/* Clickable item div */}
+                  <span className="item-text">{item.name} - {item.quantity}x - ₱{item.price}</span>  {/* Display item details */}
+                  <div className="button-group">
+                    <button className="edit-button" onClick={(e) => { e.stopPropagation(); handleEditItem(item.id); }}>Edit</button>  {/* Edit button */}
+                    <button className="delete-button" onClick={(e) => { e.stopPropagation(); handleDeleteItem(item.id); }}>Delete</button>  {/* Delete button */}
+                  </div>
+                </div>
+              ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
 
-      {/* Button to open the modal for adding a new item */}
-      <button className="add-list-button" onClick={() => setIsModalOpen(true)}>
+      {/* Add new list button */}
+      <button className="add-list-button" onClick={() => { setItem({ name: "", quantity: "", price: "", image: "", category: "", editIndex: null }); setIsModalOpen(true); }}>
         Add New List
       </button>
 
-      {/* Modal for adding or editing an item */}
+      {/* Modal for adding/editing an item */}
       <Modal
-        isOpen={isModalOpen}  // Controls whether the modal is visible.
-        onClose={() => setIsModalOpen(false)}  // Function to close the modal.
-        onSubmit={handleAddItem}  // Function to handle adding or editing an item.
-        item={item}  // Pass the current item state to the modal.
-        setItem={setItem}  // Function to update the item fields in the modal.
+        isOpen={isModalOpen}  // Pass if modal is open
+        onClose={() => setIsModalOpen(false)}  // Close modal function
+        onSubmit={handleAddItem}  // Handle form submission
+        item={item}  // Pass current item details to the modal
+        setItem={setItem}  // Function to update form fields
       />
 
-      {/* Modal for viewing item details */}
+      {/* Details modal for viewing an item */}
       <DetailsModal
-        isOpen={isDetailsModalOpen}  // Controls whether the details modal is visible.
-        onClose={() => setIsDetailsModalOpen(false)}  // Function to close the details modal.
-        item={selectedItem}  // Pass the selected item to the modal to display details.
+        isOpen={isDetailsModalOpen}  // Pass if details modal is open
+        onClose={() => setIsDetailsModalOpen(false)}  // Close details modal function
+        item={selectedItem}  // Pass selected item to the details modal
       />
     </div>
   );
 }
 
-export default Body;  // Export the component for use in other parts of the application.
+export default Body;  // Export the Body component as default
