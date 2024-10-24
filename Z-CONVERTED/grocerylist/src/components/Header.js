@@ -1,20 +1,19 @@
-import "../styles/Header.css";  // Import CSS styles specific to the Header component.
-import React from "react";  // Import React to use JSX.
+import "../styles/Header.css";  // Import CSS for styling
+import React from "react";  // Import React
 
+// Define the Header component that accepts props (backgroundImage, logoImage)
 function Header(props) {
   return (
-    <header className="header" style={{ backgroundImage: `url(${props.backgroundImage})` }}>
-      {/* Render the background image using the backgroundImage prop */}
+    <header className="header" style={{ backgroundImage: `url(${props.backgroundImage})` }}>  {/* Set background image using inline style */}
       <div className="img1">
-        {/* Render the logo image using the logoImage prop */}
         <img
-          src={props.logoImage}
-          alt="Logo"
-          className="logo-img"
+          src={props.logoImage}  // Set logo image from props
+          alt="Logo"  // Alt text for accessibility
+          className="logo-img"  // Apply CSS class to style the logo
         />
       </div>
     </header>
   );
 }
 
-export default Header;  // Export the Header component for use in other parts of the app.
+export default Header;  // Export the Header component
